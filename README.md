@@ -18,7 +18,7 @@ Positive-only chore game: pick a quest with a finish condition, snap a before ph
    - `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`
    - `SUPABASE_SERVICE_ROLE_KEY`, `OPENAI_API_KEY` (server-side only)
    - `BASE_SEPOLIA_APP_SIGNER` / `BASE_SEPOLIA_RPC_URL` (server-side only)
-3. Run the Supabase migrations in `supabase/migrations/` in order (`0001_init.sql`, `0002_quests.sql`, `0003_progress_check.sql`, `0004_celebrations.sql`) (RLS on every table; explicit least-privilege GRANTs — new tables created after 2026-10-30 are not auto-exposed to the Data API).
+3. Run the Supabase migrations in `supabase/migrations/` in order (`0001_init.sql`, `0002_quests.sql`, `0003_progress_check.sql`, `0004_celebrations.sql`, `0005_streaks.sql`, `0006_mints.sql`) (RLS on every table; explicit least-privilege GRANTs — new tables created after 2026-10-30 are not auto-exposed to the Data API).
 4. In Supabase Auth → URL Configuration, add `http://localhost:3000/auth/callback` (and your deployed origin's `/auth/callback`) to Redirect URLs. Sign-in is email magic link only (no OAuth).
 5. `npm run dev`
 
@@ -48,7 +48,7 @@ After `complete_quest` succeeds, the photo route runs one server-side vision cal
 2. **Rate** — a circle-mate opens `/r/<code>`, sees the before/after photos and picks **3 Done / 4 Great / 5 Legendary**. `rate_quest` (SECURITY DEFINER) is the only writer and enforces: same circle, **no self-rating**, rater **joined ≥ 24h before the quest started**, one rating per rater per quest, and the `lib/rating.ts` caps (2 counted per quest, 5 counted per rater per day, uncredited completions not rateable). Over-cap ratings are kept as a thank-you but change nothing.
 3. **Level tick** — a counted rating adds +2/+4/+6 XP and `(rating − 3) × 0.06 × (1.0 pass / 0.8 otherwise)` to `profiles.score`; `level` is recomputed and can only rise. Both rater and owner see the `3.50 → 3.64 ▲` tick.
 4. **Boss** — `complete_quest` now credits the first 3 completions per UTC day with +10 XP. Total XP drives the Boss HP bar (`lib/boss.ts`, 50 HP per boss); crossing a boundary shows *Boss defeated*.
-5. **First Fold** — the first counted celebration a player receives inserts a `badges` row (`first_fold`). The soulbound mint is a later step.
+5. **First Fold** — the first counted celebration a player receives inserts a `badges` row (`first_fold`) and triggers the soulbound mint: server-side, app signer to a generated recipient address on Base Sepolia. Until the go/no-go the mint runs in **simulated** mode (labelled in the UI); set `MINT_BACKEND=onchain` with `MINTER_PRIVATE_KEY`, `SOULBOUND_CONTRACT_ADDRESS` and `BASE_SEPOLIA_RPC_URL` to go live.
 
 **Photo sharing:** storage stays owner-only. `get_celebration` only returns a row to members of the quest's circle; only then does the server sign that run's two photo keys with the service-role client for **5 minutes** (`PHOTO_URL_TTL_SECONDS`). Without `SUPABASE_SERVICE_ROLE_KEY` the photos show as unavailable and rating still works.
 
