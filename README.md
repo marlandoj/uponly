@@ -37,7 +37,7 @@ Positive-only chore game: pick a quest with a finish condition, snap a before ph
 
 - `npm run build`
 - `npx tsc --noEmit`
-- `npm test` (join-code, quest catalog / timer, and JPEG metadata-stripping unit tests)
+- `npm test` (join-code, quest catalog / timer, JPEG metadata-stripping, and rating-math (`lib/rating.ts`: level, XP, caps) unit tests)
 
 ## Limitations
 
