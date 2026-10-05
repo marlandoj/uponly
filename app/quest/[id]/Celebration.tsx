@@ -2,6 +2,7 @@ import { BossBar, LevelTick } from "@/app/Celebrate";
 import { bossesDefeatedBetween } from "@/lib/boss";
 import { RATING_LABELS } from "@/lib/celebration";
 import { qrDataUrl, ratingUrl } from "@/lib/celebrationData";
+import { mintFirstFold, mintLabel } from "@/lib/mint";
 import type { QuestRun } from "@/lib/questRuns";
 import { isRating, type Rating } from "@/lib/rating";
 import { createClient } from "@/lib/supabase/server";
@@ -35,6 +36,9 @@ export default async function Celebration({ run }: { run: QuestRun }) {
 
   const xpAfter = run.xp_after_completion ?? 0;
   const bosses = run.completion_xp > 0 ? bossesDefeatedBetween(xpAfter - run.completion_xp, xpAfter) : [];
+  const hasFirstFold = ratings.some((r) => r.first_fold);
+  // Idempotent: returns the existing mint record if already minted.
+  const mint = hasFirstFold ? await mintFirstFold(run.user_id).catch(() => null) : null;
 
   return (
     <>
@@ -78,7 +82,12 @@ export default async function Celebration({ run }: { run: QuestRun }) {
               </li>
             ))}
           </ul>
-          {ratings.some((r) => r.first_fold) && <p className="badge">🏅 First Fold badge unlocked!</p>}
+          {hasFirstFold && (
+            <p className="badge">
+              🏅 First Fold badge unlocked!
+              {mint && <span className="muted"> · soulbound ({mintLabel(mint)})</span>}
+            </p>
+          )}
         </section>
       )}
     </>
