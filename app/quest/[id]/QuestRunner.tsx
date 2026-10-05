@@ -73,6 +73,7 @@ export default function QuestRunner({ runId, status, startedAt, serverNow }: Pro
       <h2>3 · After photo</h2>
       <CameraCapture
         label={wait > 0 ? `Unlocks in ${formatClock(wait)}` : "Open camera"}
+        busyLabel="Uploading & checking…"
         disabled={wait > 0}
         onCapture={(p) => upload("after", p)}
       />

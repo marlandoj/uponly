@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getQuestRun } from "@/lib/questRuns";
+import { isPhotoOnlyPath } from "@/lib/progressCheck";
+import { getQuestRun, type QuestRun } from "@/lib/questRuns";
 import { abandonQuest } from "../actions";
 import QuestRunner from "./QuestRunner";
 
@@ -36,6 +37,7 @@ export default async function QuestRunPage({
         <section className="card">
           <h2>Quest complete 🎉</h2>
           <p>Nice work. Your before and after photos are saved privately.</p>
+          <ProgressCheck run={run} />
           <Link href="/quest" className="button">Start another quest</Link>
         </section>
       ) : (
@@ -53,5 +55,27 @@ export default async function QuestRunPage({
       )}
       <Link href="/" className="muted center">Back to circle</Link>
     </>
+  );
+}
+
+// Positive framing for every outcome: the check never undoes a completion.
+function ProgressCheck({ run }: { run: QuestRun }) {
+  const v = run.verification;
+  const title =
+    v === "pass"
+      ? "✅ AI check: looks done!"
+      : v === "fail"
+        ? "📸 AI check couldn't spot the finish — still counts"
+        : v === "unclear"
+          ? "📸 AI check wasn't sure — photo-only"
+          : "📸 Photo-only";
+  const detail =
+    run.verification_reason ??
+    (isPhotoOnlyPath(v) ? "Your circle-mate will judge from the photos." : null);
+  return (
+    <div className={`verdict ${v === "pass" ? "pass" : "photo"}`}>
+      <strong>{title}</strong>
+      {detail && <p className="muted">{detail}</p>}
+    </div>
   );
 }

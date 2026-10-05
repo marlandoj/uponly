@@ -1,3 +1,4 @@
+import type { Verification } from "@/lib/rating";
 import { createClient } from "@/lib/supabase/server";
 
 export type QuestStatus = "draft" | "active" | "completed" | "abandoned";
@@ -13,10 +14,14 @@ export type QuestRun = {
   after_path: string | null;
   started_at: string | null;
   completed_at: string | null;
+  /** AI progress check result; null = not recorded (treated as photo-only). */
+  verification: Verification | null;
+  verification_reason: string | null;
 };
 
 const COLUMNS =
-  "id, user_id, quest_key, title, finish_condition, status, before_path, after_path, started_at, completed_at";
+  "id, user_id, quest_key, title, finish_condition, status, before_path, after_path, started_at, completed_at, " +
+  "verification, verification_reason";
 
 /** One of the caller's own runs (RLS is owner-only), or null. */
 export async function getQuestRun(id: string): Promise<QuestRun | null> {

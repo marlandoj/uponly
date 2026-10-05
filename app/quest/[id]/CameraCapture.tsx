@@ -7,6 +7,8 @@ const MAX_EDGE = 1600;
 
 type Props = {
   label: string;
+  /** Shown while onCapture is pending (defaults to "Uploading…"). */
+  busyLabel?: string;
   disabled?: boolean;
   onCapture: (photo: Blob) => Promise<void>;
 };
@@ -16,7 +18,7 @@ type Props = {
  * deliberately no file picker, so photos can't come from the gallery. Canvas
  * re-encoding also drops all EXIF (GPS, device) before the bytes leave the phone.
  */
-export default function CameraCapture({ label, disabled, onCapture }: Props) {
+export default function CameraCapture({ label, busyLabel = "Uploading…", disabled, onCapture }: Props) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const [state, setState] = useState<"idle" | "starting" | "live" | "busy">("idle");
@@ -91,7 +93,7 @@ export default function CameraCapture({ label, disabled, onCapture }: Props) {
       />
       {state === "live" || state === "busy" ? (
         <button type="button" onClick={snap} disabled={state === "busy"}>
-          {state === "busy" ? "Uploading…" : "📸 Snap"}
+          {state === "busy" ? busyLabel : "📸 Snap"}
         </button>
       ) : (
         <button type="button" onClick={start} disabled={disabled || state === "starting"}>

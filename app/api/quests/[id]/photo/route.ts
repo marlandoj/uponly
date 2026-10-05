@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { stripJpegMetadata } from "@/lib/jpeg";
 import { getQuestRun } from "@/lib/questRuns";
+import { verifyCompletedRun } from "@/lib/questVerification";
 import { photoPath, secondsUntilUnlock } from "@/lib/quests";
 import { createClient } from "@/lib/supabase/server";
 
@@ -12,6 +13,8 @@ const err = (status: number, error: string) => NextResponse.json({ error }, { st
 // POST multipart/form-data { kind: "before" | "after", photo: image/jpeg }
 // Uploads to evidence/<uid>/<run>/<kind>.jpg with metadata stripped, then
 // advances the run via RPC (which re-checks ownership, state and the 4-min rule).
+// After a successful completion it runs the AI progress check (≤10 s, never
+// fails the request — the quest is already completed by then).
 export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const supabase = await createClient();
@@ -61,9 +64,13 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     return err(status, error.message);
   }
 
+  const check = kind === "after" ? await verifyCompletedRun(supabase, run, clean) : null;
+
   return NextResponse.json({
     status: data.status,
     startedAt: data.started_at,
     completedAt: data.completed_at,
+    verification: check?.verification ?? null,
+    verificationReason: check?.reason ?? null,
   });
 }
