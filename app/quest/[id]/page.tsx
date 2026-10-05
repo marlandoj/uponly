@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { isPhotoOnlyPath } from "@/lib/progressCheck";
 import { getQuestRun, type QuestRun } from "@/lib/questRuns";
-import { abandonQuest } from "../actions";
+import { abandonQuest, deleteQuestPhotos } from "../actions";
 import Celebration from "./Celebration";
 import QuestRunner from "./QuestRunner";
 
@@ -45,6 +45,15 @@ export default async function QuestRunPage({
             <ProgressCheck run={run} />
           </section>
           <Celebration run={run} />
+          <form action={deleteQuestPhotos}>
+            <input type="hidden" name="id" value={run.id} />
+            <button type="submit" className="secondary">
+              Delete my evidence photos
+            </button>
+          </form>
+          <p className="muted">
+            Photos stay private to your circle and can be deleted anytime. Ratings already given stay.
+          </p>
           <Link href="/quest" className="button">Start another quest</Link>
         </>
       ) : (

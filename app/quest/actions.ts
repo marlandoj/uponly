@@ -39,3 +39,22 @@ export async function shareQuest(formData: FormData) {
   const back = `/quest/${encodeURIComponent(id)}`;
   redirect(error ? `${back}?error=${encodeURIComponent(error.message)}` : back);
 }
+
+/** Owner deletes their evidence photos. Ratings already given stay. */
+export async function deleteQuestPhotos(formData: FormData) {
+  const id = String(formData.get("id") ?? "");
+  const back = `/quest/${encodeURIComponent(id)}`;
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .rpc("delete_quest_photos", { p_run_id: id })
+    .single<{ before_path: string | null; after_path: string | null }>();
+  if (error) redirect(`${back}?error=${encodeURIComponent(error.message)}`);
+  const paths = [data.before_path, data.after_path].filter((p): p is string => !!p);
+  if (paths.length > 0) {
+    // Owner-delete storage policy covers this; DB refs are already cleared,
+    // so a storage failure only orphans invisible files.
+    const { error: rmError } = await supabase.storage.from("evidence").remove(paths);
+    if (rmError) console.warn("deleteQuestPhotos: storage remove failed:", rmError.message);
+  }
+  redirect(back);
+}
