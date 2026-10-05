@@ -16,10 +16,15 @@ Positive-only chore game: pick a quest with a finish condition, snap a before ph
 1. `npm install`
 2. Copy `.env.example` → `.env.local` and fill in:
    - `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-   - `OPENAI_API_KEY` (server-side only)
+   - `SUPABASE_SERVICE_ROLE_KEY`, `OPENAI_API_KEY` (server-side only)
    - `BASE_SEPOLIA_APP_SIGNER` / `BASE_SEPOLIA_RPC_URL` (server-side only)
 3. Run the Supabase migration in `supabase/migrations/0001_init.sql` (RLS on every table; explicit least-privilege GRANTs — new tables created after 2026-10-30 are not auto-exposed to the Data API).
-4. `npm run dev`
+4. In Supabase Auth → URL Configuration, add `http://localhost:3000/auth/callback` (and your deployed origin's `/auth/callback`) to Redirect URLs. Sign-in is email magic link only (no OAuth).
+5. `npm run dev`
+
+### Data API grants (Supabase 2026-10-30 change)
+
+**Tables created after 2026-10-30 need explicit GRANTs; see migration 0001.** Every table gets RLS on *and* a least-privilege grant (`authenticated`: only what its policies allow; `anon`: nothing; `service_role`: explicit). Never fix a `42501` with `GRANT ALL`.
 
 ## Verify
 

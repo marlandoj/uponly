@@ -1,0 +1,27 @@
+"use server";
+
+import { redirect } from "next/navigation";
+import { normalizeJoinCode } from "@/lib/joinCode";
+import { createClient } from "@/lib/supabase/server";
+
+const fail = (msg: string): never => redirect(`/circle?error=${encodeURIComponent(msg)}`);
+
+export async function createCircle(formData: FormData) {
+  const name = String(formData.get("name") ?? "").trim();
+  if (name.length < 1 || name.length > 40) fail("Circle name must be 1–40 characters");
+
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("create_circle", { p_name: name });
+  if (error) fail(error.message);
+  redirect("/");
+}
+
+export async function joinCircle(formData: FormData) {
+  const code = normalizeJoinCode(String(formData.get("code") ?? ""));
+  if (!code) fail("That doesn't look like a 6-character circle code");
+
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("join_circle", { p_code: code });
+  if (error) fail(error.code === "P0002" ? "No circle with that code" : error.message);
+  redirect("/");
+}
