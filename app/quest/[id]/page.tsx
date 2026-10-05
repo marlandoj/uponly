@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { isPhotoOnlyPath } from "@/lib/progressCheck";
 import { getQuestRun, type QuestRun } from "@/lib/questRuns";
 import { abandonQuest } from "../actions";
+import Celebration from "./Celebration";
 import QuestRunner from "./QuestRunner";
 
 export default async function QuestRunPage({
@@ -34,12 +35,18 @@ export default async function QuestRunPage({
           serverNow={Date.now()}
         />
       ) : run.status === "completed" ? (
-        <section className="card">
-          <h2>Quest complete 🎉</h2>
-          <p>Nice work. Your before and after photos are saved privately.</p>
-          <ProgressCheck run={run} />
+        <>
+          <section className="card">
+            <h2>Quest complete 🎉</h2>
+            <p>
+              Nice work. Your before and after photos stay private — circle-mates only see them
+              through your celebration code.
+            </p>
+            <ProgressCheck run={run} />
+          </section>
+          <Celebration run={run} />
           <Link href="/quest" className="button">Start another quest</Link>
-        </section>
+        </>
       ) : (
         <section className="card">
           <p>This quest was set aside. No harm done — levels only go up.</p>

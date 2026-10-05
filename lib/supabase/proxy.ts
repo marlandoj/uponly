@@ -33,7 +33,8 @@ export async function updateSession(request: NextRequest) {
   if (!user && !PUBLIC_PATHS.some((p) => pathname === p || pathname.startsWith(`${p}/`))) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
-    url.search = "";
+    // Remember where they were headed (e.g. a scanned rating QR) for after sign-in.
+    url.search = pathname === "/" ? "" : `?next=${encodeURIComponent(pathname + request.nextUrl.search)}`;
     return NextResponse.redirect(url);
   }
 

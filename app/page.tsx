@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getMyCircle } from "@/lib/circle";
 import { createClient } from "@/lib/supabase/server";
+import { BossBar } from "./Celebrate";
 import { signOut } from "./login/actions";
 
 type Member = {
@@ -22,11 +23,25 @@ export default async function Home() {
     .overrideTypes<Member[], { merge: false }>();
   if (error) throw error;
 
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  const me = members.find((m) => m.profiles?.id === user?.id)?.profiles;
+
   return (
     <>
       <h1>{circle.name}</h1>
 
       <Link href="/quest" className="button">Start a quest</Link>
+      <Link href="/r" className="button secondary">Celebrate a circle-mate&apos;s quest</Link>
+
+      {me && (
+        <section className="card">
+          <h2>Boss battle</h2>
+          <BossBar xp={me.xp} />
+          <p className="muted">Every finished quest hits the boss for 10 XP (up to 3 a day).</p>
+        </section>
+      )}
 
       <section className="card">
         <h2>Invite to your circle</h2>

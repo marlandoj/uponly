@@ -18,7 +18,7 @@ Positive-only chore game: pick a quest with a finish condition, snap a before ph
    - `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`
    - `SUPABASE_SERVICE_ROLE_KEY`, `OPENAI_API_KEY` (server-side only)
    - `BASE_SEPOLIA_APP_SIGNER` / `BASE_SEPOLIA_RPC_URL` (server-side only)
-3. Run the Supabase migrations in `supabase/migrations/` in order (`0001_init.sql`, `0002_quests.sql`, `0003_progress_check.sql`) (RLS on every table; explicit least-privilege GRANTs — new tables created after 2026-10-30 are not auto-exposed to the Data API).
+3. Run the Supabase migrations in `supabase/migrations/` in order (`0001_init.sql`, `0002_quests.sql`, `0003_progress_check.sql`, `0004_celebrations.sql`) (RLS on every table; explicit least-privilege GRANTs — new tables created after 2026-10-30 are not auto-exposed to the Data API).
 4. In Supabase Auth → URL Configuration, add `http://localhost:3000/auth/callback` (and your deployed origin's `/auth/callback`) to Redirect URLs. Sign-in is email magic link only (no OAuth).
 5. `npm run dev`
 
@@ -42,11 +42,21 @@ After `complete_quest` succeeds, the photo route runs one server-side vision cal
 - **Keys:** `OPENAI_API_KEY` is read from the server environment only; if it's unset the check is skipped (photo-only) and nothing breaks. `OPENAI_VISION_MODEL` optionally overrides the model.
 - **Recording:** the verdict is written to `quest_runs.verification` with the service-role client (`SUPABASE_SERVICE_ROLE_KEY`) so players can't set their own verdict; without that key the verdict is shown once but not saved (treated as photo-only). Photos sent to the model are the EXIF-stripped copies.
 
+## Celebration flow
+
+1. **Share** — on a completed quest the owner taps *Share for celebration*; `share_quest` gives the run a 6-char code (circle join-code alphabet). The quest page shows it as a **QR image** (server-rendered SVG), a **link** (`/r/<code>`, native share sheet / copy) and the **code** itself (typed in at `/r`). Signed-out scanners go through the magic link and land back on the rating page.
+2. **Rate** — a circle-mate opens `/r/<code>`, sees the before/after photos and picks **3 Done / 4 Great / 5 Legendary**. `rate_quest` (SECURITY DEFINER) is the only writer and enforces: same circle, **no self-rating**, rater **joined ≥ 24h before the quest started**, one rating per rater per quest, and the `lib/rating.ts` caps (2 counted per quest, 5 counted per rater per day, uncredited completions not rateable). Over-cap ratings are kept as a thank-you but change nothing.
+3. **Level tick** — a counted rating adds +2/+4/+6 XP and `(rating − 3) × 0.06 × (1.0 pass / 0.8 otherwise)` to `profiles.score`; `level` is recomputed and can only rise. Both rater and owner see the `3.50 → 3.64 ▲` tick.
+4. **Boss** — `complete_quest` now credits the first 3 completions per UTC day with +10 XP. Total XP drives the Boss HP bar (`lib/boss.ts`, 50 HP per boss); crossing a boundary shows *Boss defeated*.
+5. **First Fold** — the first counted celebration a player receives inserts a `badges` row (`first_fold`). The soulbound mint is a later step.
+
+**Photo sharing:** storage stays owner-only. `get_celebration` only returns a row to members of the quest's circle; only then does the server sign that run's two photo keys with the service-role client for **5 minutes** (`PHOTO_URL_TTL_SECONDS`). Without `SUPABASE_SERVICE_ROLE_KEY` the photos show as unavailable and rating still works.
+
 ## Verify
 
 - `npm run build`
 - `npx tsc --noEmit`
-- `npm test` (join-code, quest catalog / timer, JPEG metadata-stripping, and rating-math (`lib/rating.ts`: level, XP, caps), and progress-check (`lib/progressCheck.ts`: verdicts, timeout, no-key and error degradation) unit tests)
+- `npm test` (join-code, quest catalog / timer, JPEG metadata-stripping, and rating-math (`lib/rating.ts`: level, XP, caps), progress-check (`lib/progressCheck.ts`: verdicts, timeout, no-key and error degradation), Boss HP (`lib/boss.ts`), celebration photo-key guard and sign-in redirect safety unit tests)
 
 ## Limitations
 

@@ -17,11 +17,17 @@ export type QuestRun = {
   /** AI progress check result; null = not recorded (treated as photo-only). */
   verification: Verification | null;
   verification_reason: string | null;
+  /** Counted toward the 3-per-day cap (earned XP, can be rated); null until completed. */
+  credited: boolean | null;
+  completion_xp: number;
+  xp_after_completion: number | null;
+  /** Celebration share code; null until the owner shares the quest. */
+  rating_code: string | null;
 };
 
 const COLUMNS =
   "id, user_id, quest_key, title, finish_condition, status, before_path, after_path, started_at, completed_at, " +
-  "verification, verification_reason";
+  "verification, verification_reason, credited, completion_xp, xp_after_completion, rating_code";
 
 /** One of the caller's own runs (RLS is owner-only), or null. */
 export async function getQuestRun(id: string): Promise<QuestRun | null> {

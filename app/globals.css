@@ -123,3 +123,46 @@ button.sticky {
 .verdict { border-radius: 0.75rem; padding: 0.75rem; display: flex; flex-direction: column; gap: 0.25rem; }
 .verdict.pass { background: #dcfce7; }
 .verdict.photo { background: #f3f4f6; }
+
+/* Celebration */
+a.button.secondary { background: #dcfce7; color: var(--brand-dark); }
+.share { align-items: center; }
+.share .muted a { color: var(--brand-dark); word-break: break-all; }
+img.qr { width: 13.75rem; height: 13.75rem; image-rendering: pixelated; background: #fff; }
+.photos { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+.photos figure { margin: 0; display: flex; flex-direction: column; gap: 0.25rem; text-align: center; }
+.photos img, .photo-missing {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+  border-radius: 0.6rem;
+  background: #f3f4f6;
+}
+.photo-missing { display: flex; align-items: center; justify-content: center; color: var(--muted); font-size: 0.85rem; }
+.photos figcaption { font-size: 0.85rem; font-weight: 600; }
+.ratings { display: flex; flex-direction: column; gap: 0.5rem; }
+.ratings button { font-size: 1.1rem; }
+.ratings button:nth-child(2) { background: #0d9488; }
+.ratings button:nth-child(3) { background: #ca8a04; }
+.celebrate { text-align: center; }
+.level-tick { font-weight: 600; }
+.level-tick .to { display: inline-block; color: var(--brand); animation: tick 0.8s ease-out 0.2s both; }
+@keyframes tick {
+  0% { transform: translateY(0.6em) scale(0.6); opacity: 0; }
+  60% { transform: translateY(-0.15em) scale(1.25); opacity: 1; }
+  100% { transform: none; }
+}
+.boss-defeated, .badge {
+  font-weight: 700;
+  border-radius: 0.75rem;
+  padding: 0.6rem;
+  animation: tick 0.8s ease-out both;
+}
+.boss-defeated { background: #fef3c7; color: #92400e; }
+.badge { background: #ede9fe; color: #5b21b6; }
+.boss { display: flex; flex-direction: column; gap: 0.35rem; text-align: left; }
+.boss-hp { background: #fee2e2; }
+.boss-hp > div { background: #dc2626; }
+@media (prefers-reduced-motion: reduce) {
+  .level-tick .to, .boss-defeated, .badge { animation: none; }
+}

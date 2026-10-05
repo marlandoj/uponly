@@ -31,3 +31,11 @@ export async function abandonQuest(formData: FormData) {
   if (error) redirect(`/quest/${encodeURIComponent(id)}?error=${encodeURIComponent(error.message)}`);
   redirect("/quest");
 }
+
+export async function shareQuest(formData: FormData) {
+  const id = String(formData.get("id") ?? "");
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("share_quest", { p_run_id: id });
+  const back = `/quest/${encodeURIComponent(id)}`;
+  redirect(error ? `${back}?error=${encodeURIComponent(error.message)}` : back);
+}

@@ -1,7 +1,8 @@
 "use server";
 
-import { headers } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
+import { NEXT_COOKIE, safeNext } from "@/lib/safeNext";
 import { createClient } from "@/lib/supabase/server";
 
 export async function sendMagicLink(formData: FormData) {
@@ -21,6 +22,19 @@ export async function sendMagicLink(formData: FormData) {
 
   if (error) {
     redirect(`/login?error=${encodeURIComponent(error.message)}`);
+  }
+
+  // Carried in a cookie (not the redirect URL) so it can't break the
+  // Supabase redirect-URL allow-list match.
+  const next = safeNext(formData.get("next"));
+  if (next) {
+    (await cookies()).set(NEXT_COOKIE, next, {
+      httpOnly: true,
+      sameSite: "lax",
+      secure: origin.startsWith("https:"),
+      path: "/auth",
+      maxAge: 60 * 60,
+    });
   }
   redirect("/login?sent=1");
 }
