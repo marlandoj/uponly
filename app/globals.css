@@ -78,3 +78,43 @@ button.secondary { background: transparent; color: var(--muted); min-height: 2.5
 
 ul.roster { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.5rem; }
 ul.roster li { display: flex; justify-content: space-between; }
+
+a.button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 3rem;
+  border-radius: 0.75rem;
+  background: var(--brand);
+  color: #fff;
+  font-weight: 700;
+  text-decoration: none;
+}
+.center { text-align: center; }
+button:disabled { opacity: 0.55; cursor: not-allowed; }
+
+/* Quest picker */
+.quest-list { display: flex; flex-direction: column; gap: 1rem; }
+fieldset.card { border: 0; margin: 0; }
+fieldset.card legend { font-weight: 700; font-size: 1.15rem; float: left; width: 100%; margin-bottom: 0.25rem; }
+label.choice { flex-direction: row; align-items: center; gap: 0.6rem; font-weight: 500; min-height: 2.5rem; }
+label.choice input { width: 1.25rem; height: 1.25rem; padding: 0; }
+button.sticky {
+  position: sticky;
+  bottom: calc(0.75rem + env(safe-area-inset-bottom));
+  box-shadow: 0 4px 12px rgb(0 0 0 / 0.15);
+}
+
+/* Quest run */
+.camera { display: flex; flex-direction: column; gap: 0.75rem; }
+.camera video { width: 100%; border-radius: 0.75rem; background: #000; aspect-ratio: 3 / 4; object-fit: cover; }
+.hidden { display: none; }
+.timer {
+  font-family: ui-monospace, monospace;
+  font-size: 2.75rem;
+  font-weight: 700;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+.progress { height: 0.6rem; border-radius: 999px; background: #dcfce7; overflow: hidden; }
+.progress > div { height: 100%; background: var(--brand); transition: width 0.5s linear; }

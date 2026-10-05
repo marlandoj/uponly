@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getMyCircle } from "@/lib/circle";
 import { createClient } from "@/lib/supabase/server";
@@ -24,6 +25,8 @@ export default async function Home() {
   return (
     <>
       <h1>{circle.name}</h1>
+
+      <Link href="/quest" className="button">Start a quest</Link>
 
       <section className="card">
         <h2>Invite to your circle</h2>
