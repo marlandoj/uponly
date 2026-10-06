@@ -1,5 +1,8 @@
 import type { Metadata, Viewport } from "next";
+import { Press_Start_2P } from "next/font/google";
 import "./globals.css";
+
+const pixel = Press_Start_2P({ weight: "400", subsets: ["latin"], display: "swap", variable: "--font-pixel" });
 
 export const metadata: Metadata = {
   title: "UpOnly",
@@ -9,7 +12,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#16a34a",
+  themeColor: "#0a0a18",
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
@@ -17,7 +20,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" className={pixel.variable}>
       <body>
         <main className="shell">{children}</main>
       </body>
