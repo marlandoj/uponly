@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getMyCircle } from "@/lib/circle";
+import { joinInviteUrl } from "@/lib/joinInvite";
+import { qrDataUrl } from "@/lib/qr";
 import { createClient } from "@/lib/supabase/server";
 import { BossBar } from "./Celebrate";
 import { signOut } from "./login/actions";
@@ -44,10 +46,11 @@ export default async function Home() {
         </section>
       )}
 
-      <section className="card">
+      <section className="card share">
         <h2>Invite to your circle</h2>
+        <InviteQr code={circle.join_code} name={circle.name} />
         <p className="code">{circle.join_code}</p>
-        <p className="muted">Share this code so housemates can join and celebrate your quests.</p>
+        <p className="muted">Scan the QR code or share this code so housemates can join and celebrate your quests.</p>
       </section>
 
       <section className="card">
@@ -70,4 +73,11 @@ export default async function Home() {
       </form>
     </>
   );
+}
+
+async function InviteQr({ code, name }: { code: string; name: string }) {
+  const url = await joinInviteUrl(code);
+  const qr = await qrDataUrl(url);
+  // eslint-disable-next-line @next/next/no-img-element -- inline SVG data URL
+  return <img className="qr" src={qr} alt={`QR code: scan to join ${name}`} width={220} height={220} />;
 }

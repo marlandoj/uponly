@@ -1,4 +1,3 @@
-import QRCode from "qrcode";
 import { headers } from "next/headers";
 import {
   PHOTO_URL_TTL_SECONDS,
@@ -9,6 +8,9 @@ import {
 } from "@/lib/celebration";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
+
+/** Shared QR helper (rendered server-side, no client JS). */
+export { qrDataUrl } from "@/lib/qr";
 
 /**
  * The celebration behind a share code, or null. The RPC returns a row only if
@@ -57,8 +59,3 @@ export async function ratingUrl(code: string): Promise<string> {
   return `${proto}://${host}${ratingPath(code)}`;
 }
 
-/** QR code for a URL as an SVG data URL (rendered server-side, no client JS). */
-export async function qrDataUrl(text: string): Promise<string> {
-  const svg = await QRCode.toString(text, { type: "svg", margin: 1, errorCorrectionLevel: "M" });
-  return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
-}
