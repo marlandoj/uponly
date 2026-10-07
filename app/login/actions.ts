@@ -28,24 +28,6 @@ export async function sendMagicLink(formData: FormData) {
   redirect("/login?sent=1");
 }
 
-export async function signInWithX(formData: FormData) {
-  const h = await headers();
-  const origin = h.get("origin") ?? `https://${h.get("host")}`;
-
-  const supabase = await createClient();
-  const { data, error } = await supabase.auth.signInWithOAuth({
-    provider: "x",
-    options: { redirectTo: `${origin}/auth/callback` },
-  });
-
-  if (error || !data.url) {
-    redirect(`/login?error=${encodeURIComponent(error?.message ?? "Could not start X sign-in")}`);
-  }
-
-  await rememberNext(formData, origin);
-  redirect(data.url);
-}
-
 // Carried in a cookie (not the redirect URL) so it can't break the
 // Supabase redirect-URL allow-list match.
 async function rememberNext(formData: FormData, origin: string) {

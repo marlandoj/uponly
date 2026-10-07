@@ -3,6 +3,7 @@ import { stripJpegMetadata } from "@/lib/jpeg";
 import { getQuestRun } from "@/lib/questRuns";
 import { verifyCompletedRun } from "@/lib/questVerification";
 import { photoPath, secondsUntilUnlock } from "@/lib/quests";
+import { earnRewardsForRun, supabaseRewardStore } from "@/lib/rewards";
 import { createClient } from "@/lib/supabase/server";
 
 // Matches the `evidence` bucket's file_size_limit in 0001_init.sql.
@@ -14,7 +15,9 @@ const err = (status: number, error: string) => NextResponse.json({ error }, { st
 // Uploads to evidence/<uid>/<run>/<kind>.jpg with metadata stripped, then
 // advances the run via RPC (which re-checks ownership, state and the 4-min rule).
 // After a successful completion it runs the AI progress check (≤10 s, never
-// fails the request — the quest is already completed by then).
+// fails the request — the quest is already completed by then). In parallel it
+// records any food rewards the run earned and runs their (mock) fulfillment;
+// that never fails the request either.
 export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const supabase = await createClient();
@@ -64,7 +67,13 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     return err(status, error.message);
   }
 
-  const check = kind === "after" ? await verifyCompletedRun(supabase, run, clean) : null;
+  const [check, rewards] =
+    kind === "after"
+      ? await Promise.all([
+          verifyCompletedRun(supabase, run, clean),
+          earnRewardsForRun(supabaseRewardStore(supabase), run),
+        ])
+      : [null, []];
 
   return NextResponse.json({
     status: data.status,
@@ -72,5 +81,6 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     completedAt: data.completed_at,
     verification: check?.verification ?? null,
     verificationReason: check?.reason ?? null,
+    rewards,
   });
 }

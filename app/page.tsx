@@ -37,6 +37,7 @@ export default async function Home() {
       <Link href="/quest" className="button">Start a quest</Link>
       <Link href="/r" className="button secondary">Celebrate a circle-mate&apos;s quest</Link>
       <Link href="/leaderboard" className="button secondary">Leaderboard</Link>
+      <Link href="/rewards" className="button secondary">Food rewards</Link>
 
       {me && (
         <section className="card">

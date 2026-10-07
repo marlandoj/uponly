@@ -6,6 +6,7 @@ export type QuestStatus = "draft" | "active" | "completed" | "abandoned";
 export type QuestRun = {
   id: string;
   user_id: string;
+  circle_id: string;
   quest_key: string;
   title: string;
   finish_condition: string;
@@ -26,7 +27,7 @@ export type QuestRun = {
 };
 
 const COLUMNS =
-  "id, user_id, quest_key, title, finish_condition, status, before_path, after_path, started_at, completed_at, " +
+  "id, user_id, circle_id, quest_key, title, finish_condition, status, before_path, after_path, started_at, completed_at, " +
   "verification, verification_reason, credited, completion_xp, xp_after_completion, rating_code";
 
 /** One of the caller's own runs (RLS is owner-only), or null. */

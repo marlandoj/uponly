@@ -2,9 +2,14 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { isPhotoOnlyPath } from "@/lib/progressCheck";
 import { getQuestRun, type QuestRun } from "@/lib/questRuns";
+import { getRunRewards } from "@/lib/rewardsData";
 import { abandonQuest, deleteQuestPhotos } from "../actions";
 import Celebration from "./Celebration";
 import QuestRunner from "./QuestRunner";
+import RewardDrop from "./RewardDrop";
+
+// The full-screen reward drop plays on the first view after earning.
+const FRESH_DROP_MS = 10 * 60 * 1000;
 
 export default async function QuestRunPage({
   params,
@@ -18,6 +23,9 @@ export default async function QuestRunPage({
   if (!run) notFound();
   const { error } = await searchParams;
   const open = run.status === "draft" || run.status === "active";
+  const earned = run.status === "completed" ? await getRunRewards(run.id) : null;
+  const freshDrop =
+    !!earned?.latestEarnedAt && Date.now() - Date.parse(earned.latestEarnedAt) < FRESH_DROP_MS;
 
   return (
     <>
@@ -36,6 +44,7 @@ export default async function QuestRunPage({
         />
       ) : run.status === "completed" ? (
         <>
+          {earned && <RewardDrop rewards={earned.rewards} fresh={freshDrop} />}
           <section className="card">
             <h2>Quest complete 🎉</h2>
             <p>
