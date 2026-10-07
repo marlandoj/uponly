@@ -348,7 +348,7 @@ ol.leaderboard .stats { white-space: nowrap; color: var(--cyan); }
     radial-gradient(circle at 50% 40%, rgb(255 216 77 / 0.25), transparent 55%),
     radial-gradient(circle at 50% 100%, rgb(255 47 179 / 0.3), transparent 60%),
     rgb(10 10 24 / 0.97);
-  animation: drop-in 0.35s ease-out both;
+  animation: drop-in 0.35s ease-out both, drop-shake 0.6s ease-out 0.35s;
 }
 .reward-drop > button { width: 100%; max-width: 20rem; font-size: 1.1rem; position: relative; }
 .reward-drop-burst { font-size: 4.5rem; line-height: 1; animation: drop-bounce 0.9s cubic-bezier(0.3, 1.6, 0.5, 1) 0.1s both; }
@@ -415,3 +415,99 @@ ul.queue li:last-child { border-bottom: 0; padding-bottom: 0; }
 .pill { font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; }
 .pill.earned { color: #ffd84d; }
 .pill.fulfilled { color: var(--lime); }
+
+/* ── Aesthetic v2: background, motion, sprites ───────────────────────────
+   Decorative only. Everything that moves is switched off under
+   prefers-reduced-motion at the end of this block. Notes:
+   - .shell slides in via `top`, not transform: a transform would make it the
+     containing block for the fixed .reward-drop overlay inside it.
+   - .card bobs with transform; no fixed-position content lives in a card. */
+
+.arcade-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 20% 15%, rgb(0 229 255 / 0.12), transparent 45%),
+    radial-gradient(circle at 85% 80%, rgb(255 47 179 / 0.12), transparent 45%);
+}
+.arcade-bg canvas { display: block; width: 100%; height: 100%; }
+.shell { position: relative; z-index: 1; animation: shell-in 0.5s ease-out backwards; }
+@keyframes shell-in { from { opacity: 0; top: 0.75rem; } to { opacity: 1; top: 0; } }
+
+/* Neon title: slow pulse plus the odd flicker of a tired tube */
+h1 { animation: neon-pulse 3.2s ease-in-out infinite, neon-flicker 7s steps(1) 1.5s infinite; }
+@keyframes neon-pulse {
+  50% { text-shadow: 0 0 14px rgb(0 229 255 / 0.95), 0 0 28px rgb(0 229 255 / 0.45), 2px 2px 0 var(--magenta); }
+}
+@keyframes neon-flicker {
+  0%, 100% { opacity: 1; }
+  92% { opacity: 0.55; }
+  93% { opacity: 1; }
+  95% { opacity: 0.7; }
+  96% { opacity: 1; }
+}
+
+/* Shimmer sweep: progress fills (XP / boss HP / quest timer) and primary buttons */
+.progress > div, button:not(.secondary), a.button:not(.secondary) { position: relative; overflow: hidden; }
+button.sticky { position: sticky; }
+.progress > div::after,
+button:not(.secondary)::after,
+a.button:not(.secondary)::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(105deg, transparent 30%, rgb(255 255 255 / 0.35) 50%, transparent 70%);
+  transform: translateX(-100%);
+  animation: shimmer 3.2s ease-in-out infinite;
+}
+.progress > div::after { animation-duration: 2.4s; }
+button:disabled::after { display: none; }
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  45%, 100% { transform: translateX(100%); }
+}
+
+/* Gentle float on cards, staggered so the stack doesn't move in lockstep */
+.card { animation: card-bob 6s ease-in-out infinite; }
+.card:nth-of-type(2n) { animation-delay: -2s; }
+.card:nth-of-type(3n) { animation-delay: -4s; }
+@keyframes card-bob { 50% { transform: translateY(-3px); } }
+
+/* Pixel-art sprites */
+img.sprite { image-rendering: pixelated; flex: none; }
+.with-sprite { display: flex; flex-direction: row; align-items: center; gap: 0.6rem; }
+ul.queue li.with-sprite > div { display: flex; flex-direction: column; gap: 0.35rem; min-width: 0; }
+.with-sprite img.sprite { filter: drop-shadow(0 0 6px rgb(0 229 255 / 0.55)); }
+fieldset.card legend.with-sprite img.sprite { filter: drop-shadow(0 0 6px rgb(255 47 179 / 0.6)); }
+
+/* Celebration hero sprite */
+.reward-drop-sprite { position: relative; }
+.reward-drop-sprite img.sprite {
+  display: block;
+  width: min(12rem, 50vw);
+  height: auto;
+  filter: drop-shadow(0 0 14px rgb(255 216 77 / 0.85)) drop-shadow(0 0 32px rgb(255 47 179 / 0.6));
+  animation: sprite-glow 1.6s ease-in-out 1s infinite;
+}
+@keyframes sprite-glow {
+  50% {
+    transform: translateY(-6px) scale(1.04);
+    filter: drop-shadow(0 0 20px rgb(255 216 77 / 1)) drop-shadow(0 0 44px rgb(0 229 255 / 0.7));
+  }
+}
+@keyframes drop-shake {
+  0%, 100% { transform: none; }
+  15% { transform: translate(-6px, 3px) scale(1.02); }
+  30% { transform: translate(5px, -4px); }
+  45% { transform: translate(-4px, 2px) scale(1.01); }
+  60% { transform: translate(3px, -2px); }
+  80% { transform: translate(-1px, 1px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shell, h1, .card, .reward-drop-sprite img.sprite { animation: none; }
+  .progress > div::after, button::after, a.button::after { display: none; }
+}

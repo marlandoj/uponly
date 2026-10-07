@@ -3,6 +3,8 @@ import { redirect } from "next/navigation";
 import { getMyCircle } from "@/lib/circle";
 import { FULFILLMENT_LABELS } from "@/lib/fulfillment";
 import { getFulfillmentQueue } from "@/lib/rewardsData";
+import { resolveSprite } from "@/lib/sprite";
+import Sprite from "../../components/Sprite";
 import { markFulfilled } from "../actions";
 
 const when = (iso: string) =>
@@ -27,24 +29,30 @@ export default async function QueuePage({
           <p className="muted">Nothing earned yet. Rewards show up here when a quest is finished.</p>
         ) : (
           <ul className="queue">
-            {queue.map((e) => (
-              <li key={e.id}>
-                <strong>
-                  {e.reward?.name} <span className={`pill ${e.status}`}>{e.status}</span>
-                </strong>
-                <span className="muted">
-                  {e.kid?.display_name ?? "A circle-mate"} · earned {when(e.earned_at)}
-                </span>
-                {e.reward && <span className="muted">{FULFILLMENT_LABELS[e.reward.fulfillment]}</span>}
-                {e.fulfillment_ref && <span className="muted">Ref: {e.fulfillment_ref}</span>}
-                {e.status === "earned" && (
-                  <form action={markFulfilled}>
-                    <input type="hidden" name="id" value={e.id} />
-                    <button type="submit">Mark fulfilled</button>
-                  </form>
-                )}
-              </li>
-            ))}
+            {queue.map((e) => {
+              const sprite = resolveSprite("reward", e.reward?.name);
+              return (
+                <li key={e.id}>
+                  <strong className={sprite ? "with-sprite" : undefined}>
+                    {sprite && <Sprite src={sprite} size={40} />}
+                    <span>
+                      {e.reward?.name} <span className={`pill ${e.status}`}>{e.status}</span>
+                    </span>
+                  </strong>
+                  <span className="muted">
+                    {e.kid?.display_name ?? "A circle-mate"} · earned {when(e.earned_at)}
+                  </span>
+                  {e.reward && <span className="muted">{FULFILLMENT_LABELS[e.reward.fulfillment]}</span>}
+                  {e.fulfillment_ref && <span className="muted">Ref: {e.fulfillment_ref}</span>}
+                  {e.status === "earned" && (
+                    <form action={markFulfilled}>
+                      <input type="hidden" name="id" value={e.id} />
+                      <button type="submit">Mark fulfilled</button>
+                    </form>
+                  )}
+                </li>
+              );
+            })}
           </ul>
         )}
       </section>

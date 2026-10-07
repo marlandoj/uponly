@@ -2,6 +2,8 @@ import { redirect } from "next/navigation";
 import { getMyCircle } from "@/lib/circle";
 import { getOpenQuestRun } from "@/lib/questRuns";
 import { MIN_QUEST_SECONDS, QUESTS } from "@/lib/quests";
+import { resolveSprite } from "@/lib/sprite";
+import Sprite from "../components/Sprite";
 import { startQuest } from "./actions";
 
 export default async function QuestPickerPage({
@@ -24,19 +26,22 @@ export default async function QuestPickerPage({
       {error && <p className="error">{error}</p>}
 
       <form action={startQuest} className="quest-list">
-        {QUESTS.map((q) => (
-          <fieldset key={q.key} className="card">
-            <legend>
-              <span aria-hidden>{q.emoji}</span> {q.title}
-            </legend>
-            {q.finishConditions.map((c) => (
-              <label key={c} className="choice">
-                <input type="radio" name="pick" value={`${q.key}::${c}`} required />
-                {c}
-              </label>
-            ))}
-          </fieldset>
-        ))}
+        {QUESTS.map((q) => {
+          const sprite = resolveSprite("chore", q.title);
+          return (
+            <fieldset key={q.key} className="card">
+              <legend className={sprite ? "with-sprite" : undefined}>
+                {sprite ? <Sprite src={sprite} size={48} /> : <span aria-hidden>{q.emoji}</span>} {q.title}
+              </legend>
+              {q.finishConditions.map((c) => (
+                <label key={c} className="choice">
+                  <input type="radio" name="pick" value={`${q.key}::${c}`} required />
+                  {c}
+                </label>
+              ))}
+            </fieldset>
+          );
+        })}
         <button type="submit" className="sticky">Start quest</button>
       </form>
     </>

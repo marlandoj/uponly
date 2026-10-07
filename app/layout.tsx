@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Press_Start_2P } from "next/font/google";
+import ArcadeBackground from "./components/ArcadeBackground";
 import "./globals.css";
 
 const pixel = Press_Start_2P({ weight: "400", subsets: ["latin"], display: "swap", variable: "--font-pixel" });
@@ -22,6 +23,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={pixel.variable}>
       <body>
+        <ArcadeBackground />
         <main className="shell">{children}</main>
       </body>
     </html>

@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import type { EarnedReward } from "@/lib/rewards";
+import { resolveSprite } from "@/lib/sprite";
+import Sprite from "../../components/Sprite";
 
 const CONFETTI = Array.from({ length: 24 }, (_, i) => i);
 
@@ -12,6 +14,7 @@ const CONFETTI = Array.from({ length: 24 }, (_, i) => i);
 export default function RewardDrop({ rewards, fresh }: { rewards: EarnedReward[]; fresh: boolean }) {
   const [open, setOpen] = useState(fresh);
   if (rewards.length === 0) return null;
+  const heroSprite = rewards.map((r) => resolveSprite("reward", r.name)).find(Boolean) ?? null;
 
   return (
     <>
@@ -22,7 +25,13 @@ export default function RewardDrop({ rewards, fresh }: { rewards: EarnedReward[]
               <span key={i} style={{ left: `${(i * 37) % 100}%`, animationDelay: `${(i % 8) * 0.15}s` }} />
             ))}
           </div>
-          <p className="reward-drop-burst" aria-hidden="true">🍕</p>
+          {heroSprite ? (
+            <div className="reward-drop-burst reward-drop-sprite" aria-hidden="true">
+              <Sprite src={heroSprite} size={192} priority />
+            </div>
+          ) : (
+            <p className="reward-drop-burst" aria-hidden="true">🍕</p>
+          )}
           <h1 id="reward-drop-title" className="reward-drop-title">REWARD EARNED!</h1>
           <ul className="reward-drop-list">
             {rewards.map((r) => (
@@ -52,9 +61,18 @@ export default function RewardDrop({ rewards, fresh }: { rewards: EarnedReward[]
 
 function RewardLine({ reward, big = false }: { reward: EarnedReward; big?: boolean }) {
   const giftCode = reward.fulfillment === "mock-tremendous" && reward.status === "fulfilled" ? reward.ref : null;
+  // The overlay already shows the big hero sprite; the card list gets a small one.
+  const sprite = big ? null : resolveSprite("reward", reward.name);
   return (
     <div className={`reward-line${big ? " big" : ""}`}>
-      <p className="reward-name">{reward.name}</p>
+      {sprite ? (
+        <p className="reward-name with-sprite">
+          <Sprite src={sprite} size={40} />
+          {reward.name}
+        </p>
+      ) : (
+        <p className="reward-name">{reward.name}</p>
+      )}
       {giftCode ? (
         <>
           <p className="code">{giftCode}</p>
