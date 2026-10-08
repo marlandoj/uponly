@@ -11,6 +11,7 @@ import { signOut } from "./login/actions";
 
 type Member = {
   role: string;
+  household_role: string;
   profiles: { id: string; display_name: string; level: number; xp: number; gamer_tag: string | null } | null;
 };
 
@@ -21,7 +22,7 @@ export default async function Home() {
   const supabase = await createClient();
   const { data: members, error } = await supabase
     .from("circle_members")
-    .select("role, profiles(id, display_name, level, xp, gamer_tag)")
+    .select("role, household_role, profiles(id, display_name, level, xp, gamer_tag)")
     .eq("circle_id", circle.id)
     .order("joined_at")
     .overrideTypes<Member[], { merge: false }>();
@@ -30,7 +31,9 @@ export default async function Home() {
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  const me = members.find((m) => m.profiles?.id === user?.id)?.profiles;
+  const myMembership = members.find((m) => m.profiles?.id === user?.id);
+  const me = myMembership?.profiles;
+  const isParent = myMembership?.household_role === "parent";
   const queue = me ? await getReviewQueue(me.id, circle.id) : [];
   const players = new Map(members.flatMap((m) => (m.profiles ? [[m.profiles.id, m.profiles] as const] : [])));
 
@@ -42,7 +45,7 @@ export default async function Home() {
           {me.gamer_tag ? <>🎮 Loot bound for: <strong>{me.gamer_tag}</strong></> : "🎮 Set your gamer tag"}
         </Link>
       )}
-      {queue.length > 0 && <ReviewQueue queue={queue} players={players} />}
+      {queue.length > 0 && <ReviewQueue queue={queue} players={players} isParent={isParent} />}
 
       <Link href="/quest" className="button">Start a quest</Link>
       <Link href="/r" className="button secondary">Celebrate a circle-mate&apos;s quest</Link>

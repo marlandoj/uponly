@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { getMyCircle } from "@/lib/circle";
 import { createCircle, joinCircle } from "./actions";
+import RolePicker from "./RolePicker";
 
 export default async function CirclePage({
   searchParams,
@@ -24,6 +25,7 @@ export default async function CirclePage({
           Circle name
           <input name="name" maxLength={40} placeholder="The Loot Squad" required />
         </label>
+        <RolePicker defaultRole="parent" />
         <button type="submit">Create circle</button>
       </form>
 
@@ -40,6 +42,7 @@ export default async function CirclePage({
             required
           />
         </label>
+        <RolePicker defaultRole="kid" />
         <button type="submit">Join circle</button>
       </form>
     </>

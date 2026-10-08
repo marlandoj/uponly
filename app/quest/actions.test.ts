@@ -50,4 +50,11 @@ describe("approveRun: structured rejection", () => {
     rpc.mockReturnValue({ single: async () => ({ data: null, error: { message: "tell them what to fix (1–300 characters)" } }) });
     expect((await approveRun(RUN, false, "Wrong spot")).error).toBe("tell them what to fix (1–300 characters)");
   });
+
+  it("a kid's approval is refused by the RPC's parent check", async () => {
+    rpc.mockReturnValue({
+      single: async () => ({ data: null, error: { code: "42501", message: "only a parent can approve a quest" } }),
+    });
+    expect(await approveRun(RUN, true)).toEqual({ error: "only a parent can approve a quest", rewards: [] });
+  });
 });
