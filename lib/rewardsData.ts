@@ -7,7 +7,7 @@ import {
   type Reward,
 } from "@/lib/rewards";
 
-// Page reads for rewards, all through the caller's RLS (0007_rewards.sql).
+// Page reads for rewards, all through the caller's RLS (0007_rewards.sql, 0008_game_rewards.sql).
 
 type EarningRow = {
   id: string;
@@ -16,7 +16,7 @@ type EarningRow = {
   earned_at: string;
   fulfilled_at: string | null;
   fulfillment_ref: string | null;
-  reward: Pick<Reward, "name" | "description" | "fulfillment"> | null;
+  reward: Pick<Reward, "name" | "description" | "kind" | "game" | "fulfillment"> | null;
 };
 
 /** Rewards earned by one quest run, shaped for the reward drop. */
@@ -24,7 +24,7 @@ export async function getRunRewards(runId: string): Promise<{ rewards: EarnedRew
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("reward_earnings")
-    .select("id, reward_id, status, earned_at, fulfilled_at, fulfillment_ref, reward:rewards(name, description, fulfillment)")
+    .select("id, reward_id, status, earned_at, fulfilled_at, fulfillment_ref, reward:rewards(name, description, kind, game, fulfillment)")
     .eq("quest_run_id", runId)
     .order("earned_at")
     .overrideTypes<EarningRow[], { merge: false }>();
@@ -39,6 +39,8 @@ export async function getRunRewards(runId: string): Promise<{ rewards: EarnedRew
         rewardId: e.reward_id,
         name: r.name,
         description: r.description,
+        kind: r.kind,
+        game: r.game,
         fulfillment: r.fulfillment,
         status: e.status,
         ref: e.fulfillment_ref,
@@ -70,7 +72,7 @@ export async function getFulfillmentQueue(circleId: string): Promise<QueueEntry[
     .from("reward_earnings")
     .select(
       "id, reward_id, status, earned_at, fulfilled_at, fulfillment_ref, " +
-        "reward:rewards!inner(name, description, fulfillment, circle_id), " +
+        "reward:rewards!inner(name, description, kind, game, fulfillment, circle_id), " +
         "kid:profiles(display_name)",
     )
     .eq("reward.circle_id", circleId)

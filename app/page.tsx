@@ -9,7 +9,7 @@ import { signOut } from "./login/actions";
 
 type Member = {
   role: string;
-  profiles: { id: string; display_name: string; level: number; xp: number } | null;
+  profiles: { id: string; display_name: string; level: number; xp: number; gamer_tag: string | null } | null;
 };
 
 export default async function Home() {
@@ -19,7 +19,7 @@ export default async function Home() {
   const supabase = await createClient();
   const { data: members, error } = await supabase
     .from("circle_members")
-    .select("role, profiles(id, display_name, level, xp)")
+    .select("role, profiles(id, display_name, level, xp, gamer_tag)")
     .eq("circle_id", circle.id)
     .order("joined_at")
     .overrideTypes<Member[], { merge: false }>();
@@ -33,11 +33,16 @@ export default async function Home() {
   return (
     <>
       <h1>{circle.name}</h1>
+      {me && (
+        <Link href="/profile" className="loot-chip">
+          {me.gamer_tag ? <>🎮 Loot bound for: <strong>{me.gamer_tag}</strong></> : "🎮 Set your gamer tag"}
+        </Link>
+      )}
 
       <Link href="/quest" className="button">Start a quest</Link>
       <Link href="/r" className="button secondary">Celebrate a circle-mate&apos;s quest</Link>
       <Link href="/leaderboard" className="button secondary">Leaderboard</Link>
-      <Link href="/rewards" className="button secondary">Food rewards</Link>
+      <Link href="/rewards" className="button secondary">Rewards &amp; loot</Link>
 
       {me && (
         <section className="card">

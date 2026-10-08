@@ -29,6 +29,8 @@ const reward = (over: Partial<Reward>): Reward => ({
   circle_id: CIRCLE,
   name: "Treat",
   description: "",
+  kind: "food",
+  game: null,
   value_cents: 1000,
   fulfillment: "manual",
   quest_key: null,
@@ -189,6 +191,14 @@ describe("earnRewardsForRun", () => {
     };
     expect((await earnRewardsForRun(flaky, run)).map((r) => r.rewardId)).toEqual(["b"]);
   });
+  it("earns and auto-fulfills game credit through the same provider path", async () => {
+    const { store } = fakeStore([
+      reward({ id: "vb", kind: "game_credit", game: "Fortnite", fulfillment: "mock-tremendous" }),
+    ]);
+    const [earned] = await earnRewardsForRun(store, run);
+    expect(earned).toMatchObject({ kind: "game_credit", game: "Fortnite", status: "fulfilled" });
+    expect(earned.ref).toMatch(MOCK_GIFT_CODE);
+  });
 });
 
 describe("reward form", () => {
@@ -205,7 +215,15 @@ describe("reward form", () => {
       parseRewardForm({ name: " Pizza ", description: "", value: "15", fulfillment: "mock-doordash", questKey: "dishes" }),
     ).toEqual({
       ok: true,
-      value: { name: "Pizza", description: "", valueCents: 1500, fulfillment: "mock-doordash", questKey: "dishes" },
+      value: {
+        name: "Pizza",
+        description: "",
+        valueCents: 1500,
+        fulfillment: "mock-doordash",
+        questKey: "dishes",
+        kind: "food",
+        game: null,
+      },
     });
   });
   it("treats an empty quest as any quest", () => {
@@ -217,5 +235,21 @@ describe("reward form", () => {
     expect(parseRewardForm({ name: "x", fulfillment: "game-credits" }).ok).toBe(false);
     expect(parseRewardForm({ name: "x", fulfillment: "manual", value: "lots" }).ok).toBe(false);
     expect(parseRewardForm({ name: "", fulfillment: "manual" }).ok).toBe(false);
+  });
+  it("defaults kind to food with no game", () => {
+    const r = parseRewardForm({ name: "Pizza", fulfillment: "manual" });
+    expect(r.ok && [r.value.kind, r.value.game]).toEqual(["food", null]);
+  });
+  it("accepts game credit with a game", () => {
+    const r = parseRewardForm({ name: "1,000 V-Bucks", fulfillment: "mock-tremendous", kind: "game_credit", game: "Fortnite" });
+    expect(r.ok && [r.value.kind, r.value.game]).toEqual(["game_credit", "Fortnite"]);
+  });
+  it("requires a known game for game credit and rejects unknown kinds", () => {
+    expect(parseRewardForm({ name: "x", fulfillment: "mock-tremendous", kind: "game_credit" })).toEqual({
+      ok: false,
+      error: "Game loot needs a game",
+    });
+    expect(parseRewardForm({ name: "x", fulfillment: "mock-tremendous", kind: "game_credit", game: "Halo" }).ok).toBe(false);
+    expect(parseRewardForm({ name: "x", fulfillment: "manual", kind: "toy" }).ok).toBe(false);
   });
 });

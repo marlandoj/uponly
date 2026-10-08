@@ -6,15 +6,23 @@ import { MANUAL_FULFILLMENT_REF } from "@/lib/fulfillment";
 import { parseRewardForm } from "@/lib/rewards";
 import { createClient } from "@/lib/supabase/server";
 
+// Forms that create rewards; errors bounce back to the one that posted.
+const REWARD_FORMS = ["/rewards/new", "/rewards/shop"];
+
+/** Food rewards, game credit packs, and Fortnite shop drops all land here. */
 export async function createReward(formData: FormData) {
+  const from = String(formData.get("from") ?? "");
+  const back = REWARD_FORMS.includes(from) ? from : "/rewards/new";
   const parsed = parseRewardForm({
     name: formData.get("name"),
     description: formData.get("description"),
     value: formData.get("value"),
     fulfillment: formData.get("fulfillment"),
     questKey: formData.get("quest"),
+    kind: formData.get("kind"),
+    game: formData.get("game"),
   });
-  if (!parsed.ok) redirect(`/rewards/new?error=${encodeURIComponent(parsed.error)}`);
+  if (!parsed.ok) redirect(`${back}?error=${encodeURIComponent(parsed.error)}`);
 
   const r = parsed.value;
   const supabase = await createClient();
@@ -24,8 +32,10 @@ export async function createReward(formData: FormData) {
     p_value_cents: r.valueCents,
     p_fulfillment: r.fulfillment,
     p_quest_key: r.questKey,
+    p_game: r.game,
+    p_kind: r.kind,
   });
-  if (error) redirect(`/rewards/new?error=${encodeURIComponent(error.message)}`);
+  if (error) redirect(`${back}?error=${encodeURIComponent(error.message)}`);
   revalidatePath("/rewards");
   redirect("/rewards");
 }

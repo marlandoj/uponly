@@ -1,17 +1,21 @@
 "use client";
 
 import { useState } from "react";
+import { resolveLootSprite } from "@/lib/lootSprites";
 import type { EarnedReward } from "@/lib/rewards";
 
 const CONFETTI = Array.from({ length: 24 }, (_, i) => i);
 
 /**
  * "REWARD EARNED!" — full-screen arcade drop the first time the completed
- * quest page loads (fresh), then a card that stays on the page.
+ * quest page loads (fresh), then a card that stays on the page. Game credit
+ * drops read "LOOT EARNED!" and lead with their pixel sprite.
  */
 export default function RewardDrop({ rewards, fresh }: { rewards: EarnedReward[]; fresh: boolean }) {
   const [open, setOpen] = useState(fresh);
   if (rewards.length === 0) return null;
+  const loot = rewards.find((r) => r.kind === "game_credit");
+  const lootSprite = loot ? resolveLootSprite(loot) : null;
 
   return (
     <>
@@ -22,8 +26,13 @@ export default function RewardDrop({ rewards, fresh }: { rewards: EarnedReward[]
               <span key={i} style={{ left: `${(i * 37) % 100}%`, animationDelay: `${(i % 8) * 0.15}s` }} />
             ))}
           </div>
-          <p className="reward-drop-burst" aria-hidden="true">🍕</p>
-          <h1 id="reward-drop-title" className="reward-drop-title">REWARD EARNED!</h1>
+          {lootSprite ? (
+            // eslint-disable-next-line @next/next/no-img-element -- static pixel sprite
+            <img className="reward-drop-burst pixel loot-sprite" src={lootSprite} alt="" width={160} height={160} />
+          ) : (
+            <p className="reward-drop-burst" aria-hidden="true">{loot ? "🎮" : "🍕"}</p>
+          )}
+          <h1 id="reward-drop-title" className="reward-drop-title">{loot ? "LOOT EARNED!" : "REWARD EARNED!"}</h1>
           <ul className="reward-drop-list">
             {rewards.map((r) => (
               <li key={r.earningId}>
@@ -36,7 +45,7 @@ export default function RewardDrop({ rewards, fresh }: { rewards: EarnedReward[]
       )}
 
       <section className="card reward-card">
-        <h2>🎁 Rewards earned</h2>
+        <h2>{loot ? "🎮 Loot earned" : "🎁 Rewards earned"}</h2>
         <ul className="reward-drop-list">
           {rewards.map((r) => (
             <li key={r.earningId}>
@@ -52,9 +61,14 @@ export default function RewardDrop({ rewards, fresh }: { rewards: EarnedReward[]
 
 function RewardLine({ reward, big = false }: { reward: EarnedReward; big?: boolean }) {
   const giftCode = reward.fulfillment === "mock-tremendous" && reward.status === "fulfilled" ? reward.ref : null;
+  const sprite = big ? null : resolveLootSprite(reward);
   return (
     <div className={`reward-line${big ? " big" : ""}`}>
-      <p className="reward-name">{reward.name}</p>
+      <p className="reward-name">
+        {/* eslint-disable-next-line @next/next/no-img-element -- static pixel sprite */}
+        {sprite && <img className="pixel inline-sprite" src={sprite} alt="" width={28} height={28} />}
+        {reward.kind === "game_credit" && reward.game ? `${reward.name} · ${reward.game}` : reward.name}
+      </p>
       {giftCode ? (
         <>
           <p className="code">{giftCode}</p>

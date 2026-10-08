@@ -30,12 +30,18 @@ export default async function QueuePage({
             {queue.map((e) => (
               <li key={e.id}>
                 <strong>
+                  {e.reward?.kind === "game_credit" && "🎮 "}
                   {e.reward?.name} <span className={`pill ${e.status}`}>{e.status}</span>
                 </strong>
                 <span className="muted">
                   {e.kid?.display_name ?? "A circle-mate"} · earned {when(e.earned_at)}
                 </span>
-                {e.reward && <span className="muted">{FULFILLMENT_LABELS[e.reward.fulfillment]}</span>}
+                {e.reward && (
+                  <span className="muted">
+                    {e.reward.game && `${e.reward.game} loot · `}
+                    {FULFILLMENT_LABELS[e.reward.fulfillment]}
+                  </span>
+                )}
                 {e.fulfillment_ref && <span className="muted">Ref: {e.fulfillment_ref}</span>}
                 {e.status === "earned" && (
                   <form action={markFulfilled}>

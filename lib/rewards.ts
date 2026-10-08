@@ -11,15 +11,30 @@ import { QUESTS } from "@/lib/quests";
 
 // Server-side reward earn flow. Runs in the photo route right after
 // complete_quest succeeds; it must never fail that request. All DB writes are
-// user-context RPCs from 0007_rewards.sql. Food rewards only; fulfillment is mock.
+// user-context RPCs from 0007_rewards.sql / 0008_game_rewards.sql. Food and game
+// credit rewards share the flow (it keys off fulfillment, not kind); fulfillment is mock.
 
 export type EarningStatus = "earned" | "fulfilled";
+
+/** Must match the rewards.kind check in 0008_game_rewards.sql. */
+export const REWARD_KINDS = ["food", "game_credit"] as const;
+export type RewardKind = (typeof REWARD_KINDS)[number];
+
+/** Must match the rewards.game / profiles.games checks in 0008_game_rewards.sql. */
+export const GAMES = ["Fortnite", "Roblox", "Minecraft", "Other"] as const;
+export type Game = (typeof GAMES)[number];
+
+export const isRewardKind = (v: unknown): v is RewardKind =>
+  typeof v === "string" && (REWARD_KINDS as readonly string[]).includes(v);
+export const isGame = (v: unknown): v is Game => typeof v === "string" && (GAMES as readonly string[]).includes(v);
 
 export type Reward = {
   id: string;
   circle_id: string;
   name: string;
   description: string;
+  kind: RewardKind;
+  game: Game | null;
   value_cents: number | null;
   fulfillment: FulfillmentKind;
   quest_key: string | null;
@@ -42,6 +57,8 @@ export type EarnedReward = {
   rewardId: string;
   name: string;
   description: string;
+  kind: RewardKind;
+  game: Game | null;
   fulfillment: FulfillmentKind;
   status: EarningStatus;
   ref: string | null;
@@ -51,7 +68,7 @@ export type EarnedReward = {
 
 export type RunForRewards = { id: string; user_id: string; circle_id: string; quest_key: string };
 
-export const REWARD_COLUMNS = "id, circle_id, name, description, value_cents, fulfillment, quest_key";
+export const REWARD_COLUMNS = "id, circle_id, name, description, kind, game, value_cents, fulfillment, quest_key";
 
 // ---------------------------------------------------------------------------
 // Pure helpers
@@ -120,15 +137,22 @@ export type RewardInput = {
   valueCents: number | null;
   fulfillment: FulfillmentKind;
   questKey: string | null;
+  kind: RewardKind;
+  game: Game | null;
 };
 
-/** Validates the parent's "new reward" form; quest must be in the catalog. */
+/**
+ * Validates the parent's "new reward" form; quest must be in the catalog.
+ * kind defaults to food; a game credit must name its game.
+ */
 export function parseRewardForm(form: {
   name?: unknown;
   description?: unknown;
   value?: unknown;
   fulfillment?: unknown;
   questKey?: unknown;
+  kind?: unknown;
+  game?: unknown;
 }): { ok: true; value: RewardInput } | { ok: false; error: string } {
   const name = String(form.name ?? "").trim();
   if (name.length < 1 || name.length > 60) return { ok: false, error: "Name must be 1-60 characters" };
@@ -142,7 +166,14 @@ export function parseRewardForm(form: {
   if (questKey !== null && !QUESTS.some((q) => q.key === questKey)) {
     return { ok: false, error: "Pick a quest from the list" };
   }
-  return { ok: true, value: { name, description, valueCents, fulfillment: form.fulfillment, questKey } };
+  const rawKind = String(form.kind ?? "").trim();
+  const kind = rawKind === "" ? "food" : rawKind;
+  if (!isRewardKind(kind)) return { ok: false, error: "Pick a reward type" };
+  const rawGame = String(form.game ?? "").trim();
+  const game = rawGame === "" ? null : rawGame;
+  if (game !== null && !isGame(game)) return { ok: false, error: "Pick a game from the list" };
+  if (kind === "game_credit" && game === null) return { ok: false, error: "Game loot needs a game" };
+  return { ok: true, value: { name, description, valueCents, fulfillment: form.fulfillment, questKey, kind, game } };
 }
 
 /** Catalog title for a reward's quest_key ("Any quest" when unattached). */
@@ -250,6 +281,8 @@ export async function earnRewardsForRun(
       rewardId: reward.id,
       name: reward.name,
       description: reward.description,
+      kind: reward.kind,
+      game: reward.game,
       fulfillment: reward.fulfillment,
       status: earning.status,
       ref: earning.fulfillment_ref,

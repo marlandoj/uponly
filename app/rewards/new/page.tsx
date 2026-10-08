@@ -3,7 +3,9 @@ import { redirect } from "next/navigation";
 import { getMyCircle } from "@/lib/circle";
 import { FULFILLMENT_KINDS, FULFILLMENT_LABELS } from "@/lib/fulfillment";
 import { QUESTS } from "@/lib/quests";
+import { GAMES } from "@/lib/rewards";
 import { createReward } from "../actions";
+import GameLootTemplates from "../GameLootTemplates";
 
 export default async function NewRewardPage({
   searchParams,
@@ -15,9 +17,19 @@ export default async function NewRewardPage({
 
   return (
     <>
-      <h1>New food reward</h1>
+      <h1>New reward</h1>
       {error && <p className="error">{error}</p>}
+
+      <section className="card" id="loot">
+        <h2>🎮 Game loot</h2>
+        <p className="muted">One tap adds a credit pack any quest can earn. It drops as a gift card — no in-game purchases.</p>
+        <Link href="/rewards/shop" className="button secondary">Browse Fortnite shop</Link>
+      </section>
+      <GameLootTemplates from="/rewards/new" />
+
       <form action={createReward} className="card">
+        <h2>🍕 Food or custom reward</h2>
+        <input type="hidden" name="from" value="/rewards/new" />
         <label>
           Reward
           <input name="name" maxLength={60} placeholder="Friday pizza night" required />
@@ -29,6 +41,22 @@ export default async function NewRewardPage({
         <label>
           Value in dollars (optional)
           <input name="value" inputMode="decimal" pattern="\$?\d{1,4}(\.\d{1,2})?" placeholder="15.00" />
+        </label>
+        <label>
+          Type
+          <select name="kind" defaultValue="food">
+            <option value="food">Food</option>
+            <option value="game_credit">Game loot</option>
+          </select>
+        </label>
+        <label>
+          Game (for game loot)
+          <select name="game" defaultValue="">
+            <option value="">None</option>
+            {GAMES.map((g) => (
+              <option key={g} value={g}>{g}</option>
+            ))}
+          </select>
         </label>
         <label>
           How it&apos;s fulfilled
