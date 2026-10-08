@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { getMyCircle } from "@/lib/circle";
+import { getMyCircle, getMyHouseholdRole } from "@/lib/circle";
 import { FULFILLMENT_KINDS, FULFILLMENT_LABELS } from "@/lib/fulfillment";
 import { QUESTS } from "@/lib/quests";
 import { parseChoreSize } from "@/lib/choreTiers";
@@ -20,6 +20,17 @@ export default async function NewRewardPage({
   const size = parseChoreSize(params.size);
   const games = String(params.games ?? "").split(",").map((s) => s.trim()).filter(isGame);
   const tag = String(params.tag ?? "").trim().slice(0, 32);
+
+  // create_reward is parents-only; kids get the note instead of forms that would bounce.
+  if ((await getMyHouseholdRole()) !== "parent") {
+    return (
+      <>
+        <h1>New reward</h1>
+        <p className="notice">🛡️ Parents only — ask a parent to add loot for your quests.</p>
+        <Link href="/rewards" className="muted center">Back to rewards</Link>
+      </>
+    );
+  }
 
   return (
     <>

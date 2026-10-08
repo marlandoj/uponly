@@ -8,10 +8,19 @@ type Player = { display_name: string; gamer_tag: string | null };
 const timeFmt = new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
 
 /** Circle home: finishes waiting on the viewer's review. Rendered only when there's at least one. */
-export default function ReviewQueue({ queue, players }: { queue: QueuedRun[]; players: Map<string, Player> }) {
+export default function ReviewQueue({
+  queue,
+  players,
+  isParent,
+}: {
+  queue: QueuedRun[];
+  players: Map<string, Player>;
+  isParent: boolean;
+}) {
   return (
     <section className="card review-queue">
       <h2>Waiting for review</h2>
+      {!isParent && <p className="muted">⏳ Waiting on a parent&apos;s review</p>}
       <ul className="queue-list">
         {queue.map(({ run, evidence }) => {
           const player = players.get(run.user_id);

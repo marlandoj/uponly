@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { getMyCircle } from "@/lib/circle";
+import { getMyCircle, getMyHouseholdRole } from "@/lib/circle";
 import { FULFILLMENT_LABELS } from "@/lib/fulfillment";
 import { getFulfillmentQueue } from "@/lib/rewardsData";
 import { markFulfilled } from "../actions";
@@ -17,11 +17,14 @@ export default async function QueuePage({
   if (!circle) redirect("/circle");
   const { error } = await searchParams;
   const queue = await getFulfillmentQueue(circle.id);
+  // mark_earning_fulfilled is parents-only for manual hand-overs.
+  const isParent = (await getMyHouseholdRole()) === "parent";
 
   return (
     <>
       <h1>Fulfillment queue</h1>
       {error && <p className="error">{error}</p>}
+      {!isParent && <p className="notice">🛡️ Parents only — a parent marks loot as handed over.</p>}
       <section className="card">
         {queue.length === 0 ? (
           <p className="muted">Nothing earned yet. Rewards show up here when a quest is finished.</p>
@@ -43,7 +46,7 @@ export default async function QueuePage({
                   </span>
                 )}
                 {e.fulfillment_ref && <span className="muted">Ref: {e.fulfillment_ref}</span>}
-                {e.status === "earned" && (
+                {e.status === "earned" && isParent && (
                   <form action={markFulfilled}>
                     <input type="hidden" name="id" value={e.id} />
                     <button type="submit">Mark fulfilled</button>
