@@ -230,6 +230,8 @@ button.secondary:active, a.button.secondary:active {
   background: linear-gradient(90deg, var(--orange) 0 4px, #232c25 4px);
 }
 button:disabled { opacity: 0.45; cursor: not-allowed; transform: none; filter: grayscale(0.6); }
+/* Hero drop-in: full-width arcade entrance, mobile-first tap target */
+button.dropin-hero { width: 100%; min-height: 4.5rem; font-size: 1.5rem; margin-top: 0.75rem; }
 
 .muted { color: var(--muted); font-size: 0.9rem; }
 .error { color: var(--error); font-weight: 700; }

@@ -4,8 +4,14 @@ import { supabaseAnonKey, supabaseUrl } from "./env";
 
 const PUBLIC_PATHS = ["/login", "/auth"];
 
-// Refreshes the Supabase session cookie on every request and bounces
-// signed-out users to /login.
+function isPublicPath(pathname: string) {
+  return PUBLIC_PATHS.some((p) => pathname === p || pathname.startsWith(`${p}/`));
+}
+
+// Refreshes the Supabase session cookie on every request. Visitors with no
+// session are signed in anonymously on the fly — a real Supabase user id, so
+// everything downstream (RLS, quests, approvals) keeps working. If anonymous
+// sign-in fails (e.g. not enabled in the dashboard), they fall back to /login.
 export async function updateSession(request: NextRequest) {
   let response = NextResponse.next({ request });
 
@@ -30,7 +36,14 @@ export async function updateSession(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   const { pathname } = request.nextUrl;
-  if (!user && !PUBLIC_PATHS.some((p) => pathname === p || pathname.startsWith(`${p}/`))) {
+  if (!user && !isPublicPath(pathname)) {
+    // Guest access: only attempted when there is no session at all — never on
+    // every request. On success the session cookie is already on `response`
+    // via setAll above.
+    const { data, error } = await supabase.auth.signInAnonymously();
+    if (!error && data.user) {
+      return response;
+    }
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     // Remember where they were headed (e.g. a scanned rating QR) for after sign-in.
