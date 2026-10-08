@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { choreSizeMeta, isChoreSize } from "@/lib/choreTiers";
 import { isPhotoOnlyPath } from "@/lib/progressCheck";
 import { getQuestRun, type QuestRun } from "@/lib/questRuns";
+import { formatCents } from "@/lib/rewards";
 import { getRunRewards } from "@/lib/rewardsData";
 import { abandonQuest, deleteQuestPhotos } from "../actions";
 import Celebration from "./Celebration";
@@ -26,10 +28,16 @@ export default async function QuestRunPage({
   const earned = run.status === "completed" ? await getRunRewards(run.id) : null;
   const freshDrop =
     !!earned?.latestEarnedAt && Date.now() - Date.parse(earned.latestEarnedAt) < FRESH_DROP_MS;
+  const size = choreSizeMeta(isChoreSize(run.chore_size) ? run.chore_size : "standard");
 
   return (
     <>
       <h1>{run.title}</h1>
+      <p>
+        <span className="loot-badge">
+          {size.emoji} {size.label} · ~{formatCents(size.suggestedCents)}
+        </span>
+      </p>
       <p className="muted">
         Finish condition: <strong>{run.finish_condition}</strong>
       </p>

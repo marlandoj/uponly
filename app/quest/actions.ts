@@ -1,6 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { parseChoreSize } from "@/lib/choreTiers";
 import { resolveQuestChoice } from "@/lib/quests";
 import { createClient } from "@/lib/supabase/server";
 
@@ -11,6 +12,7 @@ export async function startQuest(formData: FormData) {
   const [questKey = "", condition = ""] = String(formData.get("pick") ?? "").split("::");
   const choice = resolveQuestChoice(questKey, condition);
   if (!choice) return fail("Pick a quest and how you'll know it's finished");
+  const size = parseChoreSize(formData.get("size"));
 
   const supabase = await createClient();
   const { data, error } = await supabase
@@ -18,6 +20,7 @@ export async function startQuest(formData: FormData) {
       p_quest_key: choice.quest.key,
       p_title: choice.quest.title,
       p_finish_condition: choice.finishCondition,
+      p_chore_size: size,
     })
     .single<{ id: string }>();
   if (error) return fail(error.message);

@@ -1,3 +1,4 @@
+import type { ChoreSize } from "@/lib/choreTiers";
 import type { Verification } from "@/lib/rating";
 import { createClient } from "@/lib/supabase/server";
 
@@ -24,11 +25,13 @@ export type QuestRun = {
   xp_after_completion: number | null;
   /** Celebration share code; null until the owner shares the quest. */
   rating_code: string | null;
+  /** Chore value tier (0011); sets the suggested reward value. */
+  chore_size: ChoreSize;
 };
 
 const COLUMNS =
   "id, user_id, circle_id, quest_key, title, finish_condition, status, before_path, after_path, started_at, completed_at, " +
-  "verification, verification_reason, credited, completion_xp, xp_after_completion, rating_code";
+  "verification, verification_reason, credited, completion_xp, xp_after_completion, rating_code, chore_size";
 
 /** One of the caller's own runs (RLS is owner-only), or null. */
 export async function getQuestRun(id: string): Promise<QuestRun | null> {

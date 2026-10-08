@@ -1,7 +1,9 @@
 import { redirect } from "next/navigation";
+import { CHORE_SIZES } from "@/lib/choreTiers";
 import { getMyCircle } from "@/lib/circle";
 import { getOpenQuestRun } from "@/lib/questRuns";
 import { MIN_QUEST_SECONDS, QUESTS } from "@/lib/quests";
+import { formatCents } from "@/lib/rewards";
 import { startQuest } from "./actions";
 
 export default async function QuestPickerPage({
@@ -24,6 +26,15 @@ export default async function QuestPickerPage({
       {error && <p className="error">{error}</p>}
 
       <form action={startQuest} className="quest-list">
+        <fieldset className="card">
+          <legend>Chore size</legend>
+          {CHORE_SIZES.map((s) => (
+            <label key={s.id} className="choice">
+              <input type="radio" name="size" value={s.id} defaultChecked={s.id === "standard"} />
+              {s.emoji} {s.label} · ~{formatCents(s.suggestedCents)}
+            </label>
+          ))}
+        </fieldset>
         {QUESTS.map((q) => (
           <fieldset key={q.key} className="card">
             <legend>
