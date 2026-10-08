@@ -21,12 +21,12 @@ export default async function NewRewardPage({
   const games = String(params.games ?? "").split(",").map((s) => s.trim()).filter(isGame);
   const tag = String(params.tag ?? "").trim().slice(0, 32);
 
-  // create_reward is parents-only; kids get the note instead of forms that would bounce.
-  if ((await getMyHouseholdRole()) !== "parent") {
+  // create_reward is GameMasters-only; gamers get the note instead of forms that would bounce.
+  if ((await getMyHouseholdRole()) !== "gamemaster") {
     return (
       <>
         <h1>New reward</h1>
-        <p className="notice">🛡️ Parents only — ask a parent to add loot for your quests.</p>
+        <p className="notice">🛡️ GameMasters only — ask the GameMaster to add loot for your quests.</p>
         <Link href="/rewards" className="muted center">Back to rewards</Link>
       </>
     );

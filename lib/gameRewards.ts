@@ -3,7 +3,7 @@ import type { Game } from "@/lib/rewards";
 
 // One-tap game credit rewards ("chores → game loot"). A template is just a
 // prefilled create_reward call: kind 'game_credit', fulfilled as a (mock)
-// gift card the parent hands over. Nothing here buys anything in a game —
+// gift card the GameMaster hands over. Nothing here buys anything in a game —
 // there is no Epic / Roblox / Microsoft purchasing API, and we don't pretend.
 
 export type GameCreditTemplate = {
@@ -11,7 +11,7 @@ export type GameCreditTemplate = {
   game: Game;
   /** "1,000 V-Bucks"; also the reward name. */
   label: string;
-  /** Suggested gift-card value covering the pack (USD list price). null = parent sets it. */
+  /** Suggested gift-card value covering the pack (USD list price). null = GameMaster sets it. */
   valueCents: number | null;
   fulfillment: Extract<FulfillmentKind, "mock-tremendous">;
 };
@@ -46,7 +46,7 @@ export const GAME_CREDIT_TEMPLATES: GameCreditTemplate[] = [
   { id: CUSTOM_TEMPLATE_ID, game: "Other", label: "Custom amount", valueCents: null, fulfillment: "mock-tremendous" },
 ];
 
-/** Overrides for the custom template (or a parent tweaking a pack). */
+/** Overrides for the custom template (or a GameMaster tweaking a pack). */
 export type TemplateOverrides = Partial<Pick<GameRewardInput, "name" | "valueCents" | "game">>;
 
 export function templateToRewardInput(t: GameCreditTemplate, over: TemplateOverrides = {}): GameRewardInput {

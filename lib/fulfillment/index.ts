@@ -6,7 +6,7 @@ export * from "./types";
 export { ManualFulfillmentError, MANUAL_FULFILLMENT_REF } from "./manual";
 
 /**
- * Provider per fulfillment kind. `null` = parent fulfills by hand (earning
+ * Provider per fulfillment kind. `null` = GameMaster fulfills by hand (earning
  * stays 'earned'). To go live, implement FulfillmentProvider against the real
  * API and swap the entry here — callers don't change.
  */
@@ -31,9 +31,9 @@ export function isFulfillmentKind(value: unknown): value is FulfillmentKind {
   return typeof value === "string" && (FULFILLMENT_KINDS as readonly string[]).includes(value);
 }
 
-/** Labels for the parent form and queue. */
+/** Labels for the GameMaster form and queue. */
 export const FULFILLMENT_LABELS: Record<FulfillmentKind, string> = {
   "mock-tremendous": "Mock Tremendous gift card",
   "mock-doordash": "Mock DoorDash order",
-  manual: "Manual parent fulfillment",
+  manual: "Manual GameMaster fulfillment",
 };

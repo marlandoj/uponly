@@ -6,8 +6,8 @@ import { shopItemToRewardInput } from "@/lib/gameRewards";
 import { createReward } from "../actions";
 import GameLootTemplates, { RewardFields } from "../GameLootTemplates";
 
-// DISPLAY ONLY. Parents browse today's Fortnite shop and turn an item into a
-// chore reward; the kid earns a (mock) gift card worth its V-Bucks. There is
+// DISPLAY ONLY. GameMasters browse today's Fortnite shop and turn an item into a
+// chore reward; the gamer earns a (mock) gift card worth its V-Bucks. There is
 // no buy button and no cart — nothing is ever purchased in-game.
 
 export default async function FortniteShopPage({

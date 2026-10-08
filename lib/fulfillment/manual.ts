@@ -1,14 +1,14 @@
-// Manual fulfillment: a parent hands over the reward in real life and marks
+// Manual fulfillment: the GameMaster hands over the reward in real life and marks
 // it fulfilled from /rewards/queue. Nothing is ever auto-fulfilled.
 
 import type { EarningInfo, FulfillmentProvider, FulfillmentResult, RewardInfo } from "./types";
 
-/** fulfillment_ref recorded when a parent marks a reward fulfilled. */
+/** fulfillment_ref recorded when the GameMaster marks a reward fulfilled. */
 export const MANUAL_FULFILLMENT_REF = "manual-parent";
 
 export class ManualFulfillmentError extends Error {
   constructor(rewardName: string) {
-    super(`"${rewardName}" is fulfilled by a parent, not automatically`);
+    super(`"${rewardName}" is fulfilled by the GameMaster, not automatically`);
     this.name = "ManualFulfillmentError";
   }
 }

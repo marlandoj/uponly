@@ -6,7 +6,7 @@ import { createReward } from "../actions";
 import { RewardFields } from "../GameLootTemplates";
 
 /**
- * Researched loot (game_catalog, 0011) for the kid's games, closest to the
+ * Researched loot (game_catalog, 0011) for the gamer's games, closest to the
  * chore's suggested value first. One tap adds it as a game_credit reward
  * fulfilled as a (mock) gift card — never an in-game purchase. Renders nothing
  * if the catalog can't be read or has no rows for these games.
@@ -30,7 +30,7 @@ export default async function LootPicker({ games, size, tag }: { games: Game[]; 
 
   return (
     <section className="card" id="loot-picker">
-      <h2>🎯 Available loot for {tag || "your kid"}</h2>
+      <h2>🎯 Available loot for {tag || "your gamer"}</h2>
       <p className="muted">
         Closest to a {meta.label} chore (~{formatCents(meta.suggestedCents)}) first — one tap adds it as a
         gift-card reward.

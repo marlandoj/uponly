@@ -1,6 +1,6 @@
 import { GAMES, isGame, type Game } from "@/lib/rewards";
 
-// Gamer tag + games a kid plays (profiles.gamer_tag / games, 0008). A label for
+// Gamer tag + games a gamer plays (profiles.gamer_tag / games, 0008). A label for
 // the household only — no gamer-tag → account lookup exists, and none is made.
 
 /** Games offered as checkboxes on the profile form ('Other' stays DB-only). */

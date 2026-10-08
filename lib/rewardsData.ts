@@ -63,7 +63,7 @@ export async function getCircleRewards(circleId: string): Promise<(Reward & { cr
   return data;
 }
 
-export type QueueEntry = EarningRow & { kid: { display_name: string } | null };
+export type QueueEntry = EarningRow & { gamer: { display_name: string } | null };
 
 /** Every earning in the circle (unfulfilled first, then newest). */
 export async function getFulfillmentQueue(circleId: string): Promise<QueueEntry[]> {
@@ -73,7 +73,7 @@ export async function getFulfillmentQueue(circleId: string): Promise<QueueEntry[
     .select(
       "id, reward_id, status, earned_at, fulfilled_at, fulfillment_ref, " +
         "reward:rewards!inner(name, description, kind, game, fulfillment, circle_id), " +
-        "kid:profiles(display_name)",
+        "gamer:profiles(display_name)",
     )
     .eq("reward.circle_id", circleId)
     .order("status")

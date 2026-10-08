@@ -39,7 +39,7 @@ describe("parseApprovalMode", () => {
     for (const m of APPROVAL_MODES) expect(parseApprovalMode(m)).toBe(m);
     expect(parseApprovalMode(null)).toBe("ai_instant");
     expect(parseApprovalMode("")).toBe("ai_instant");
-    expect(parseApprovalMode("parent_only")).toBe("ai_instant");
+    expect(parseApprovalMode("gamemaster_only")).toBe("ai_instant");
   });
 });
 

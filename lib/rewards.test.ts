@@ -22,7 +22,7 @@ vi.spyOn(console, "log").mockImplementation(() => {});
 vi.spyOn(console, "warn").mockImplementation(() => {});
 
 const CIRCLE = "c1";
-const run = { id: "run1", user_id: "kid", circle_id: CIRCLE, quest_key: "dishes" };
+const run = { id: "run1", user_id: "gamer", circle_id: CIRCLE, quest_key: "dishes" };
 
 const reward = (over: Partial<Reward>): Reward => ({
   id: "r",
@@ -124,8 +124,8 @@ describe("earning status transitions", () => {
     expect(isAutoFulfilled("mock-doordash")).toBe(true);
     expect(isAutoFulfilled("manual")).toBe(false);
   });
-  it("describes each state for the kid", () => {
-    expect(describeEarning("manual", "earned", null).displayText).toBe("Your parent will fulfill this");
+  it("describes each state for the gamer", () => {
+    expect(describeEarning("manual", "earned", null).displayText).toBe("Your GameMaster will fulfill this");
     expect(describeEarning("mock-tremendous", "fulfilled", "DD-AAAA-BBBB").displayText).toContain("DD-AAAA-BBBB");
     const dd = describeEarning("mock-doordash", "fulfilled", "MOCK-DD-ABCDEF");
     expect(dd.displayText).toBe("Order confirmed");
@@ -152,7 +152,7 @@ describe("earnRewardsForRun", () => {
     expect(pizza.ref).toMatch(MOCK_ORDER_ID);
     expect(pizza.displayText).toBe("Order confirmed");
     expect(pizza.etaMinutes).toBeGreaterThanOrEqual(25);
-    expect(cookie).toMatchObject({ status: "earned", ref: null, displayText: "Your parent will fulfill this" });
+    expect(cookie).toMatchObject({ status: "earned", ref: null, displayText: "Your GameMaster will fulfill this" });
     expect(earnings.size).toBe(3);
   });
 
