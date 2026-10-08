@@ -1,10 +1,16 @@
 // Generates the PWA icons in public/icons/ (dependency-free PNG encoder).
-// Design: white up-chevron on brand green. Run: node scripts/gen-icons.mjs
+// Design: ChoreQuest mark — four rotated blocks (purple, cyan, orange, lime)
+// on the dark tactical base. Run: node scripts/gen-icons.mjs
 import { mkdirSync, writeFileSync } from "node:fs";
 import { deflateSync } from "node:zlib";
 
-const BG = [22, 163, 74]; // #16a34a
-const FG = [255, 255, 255];
+const BG = [11, 15, 12]; // #0b0f0c
+const BLOCKS = [
+  [139, 61, 255], // purple
+  [34, 228, 255], // cyan
+  [255, 122, 26], // orange
+  [125, 255, 42], // lime
+];
 
 const crcTable = Array.from({ length: 256 }, (_, n) => {
   let c = n;
@@ -25,33 +31,36 @@ const chunk = (type, data) => {
   return Buffer.concat([len, td, crc]);
 };
 
-// Distance from point to segment, for a thick anti-aliased chevron stroke.
-const segDist = (px, py, ax, ay, bx, by) => {
-  const dx = bx - ax, dy = by - ay;
-  const t = Math.max(0, Math.min(1, ((px - ax) * dx + (py - ay) * dy) / (dx * dx + dy * dy)));
-  return Math.hypot(px - (ax + t * dx), py - (ay + t * dy));
-};
-
 function icon(size, safeZone) {
   // Maskable icons keep the glyph inside the central 80% safe zone.
-  const s = size * (safeZone ? 0.55 : 0.7);
+  const grid = size * (safeZone ? 0.42 : 0.52); // total 2x2 grid span
   const cx = size / 2, cy = size / 2;
-  const apex = [cx, cy - s * 0.3];
-  const left = [cx - s * 0.42, cy + s * 0.18];
-  const right = [cx + s * 0.42, cy + s * 0.18];
-  const half = s * 0.09;
+  const block = grid / 2.25; // block size (gap = grid - 2*block)
+  const rot = (-8 * Math.PI) / 180;
 
   const raw = Buffer.alloc(size * (size * 3 + 1));
   let o = 0;
   for (let y = 0; y < size; y++) {
     raw[o++] = 0;
     for (let x = 0; x < size; x++) {
-      const d = Math.min(
-        segDist(x + 0.5, y + 0.5, ...apex, ...left),
-        segDist(x + 0.5, y + 0.5, ...apex, ...right),
-      );
-      const a = Math.max(0, Math.min(1, half - d + 0.5));
-      for (let i = 0; i < 3; i++) raw[o++] = Math.round(BG[i] + (FG[i] - BG[i]) * a);
+      // Un-rotate point around center to sample the axis-aligned grid.
+      const px = x + 0.5 - cx, py = y + 0.5 - cy;
+      const ux = px * Math.cos(-rot) - py * Math.sin(-rot);
+      const uy = px * Math.sin(-rot) + py * Math.cos(-rot);
+      let rgb = BG;
+      if (Math.abs(ux) < grid / 2 && Math.abs(uy) < grid / 2) {
+        const col = ux < 0 ? 0 : 1;
+        const row = uy < 0 ? 0 : 1;
+        const lx = Math.abs(ux) - (grid / 2 - block);
+        const ly = Math.abs(uy) - (grid / 2 - block);
+        if (lx >= 0 && lx < block && ly >= 0 && ly < block) {
+          const c = BLOCKS[row * 2 + col];
+          // Inset shading: darker toward bottom-right, like the CSS logo.
+          const shade = 1 - 0.35 * ((lx / block + ly / block) / 2);
+          rgb = c.map((v) => Math.round(v * shade));
+        }
+      }
+      for (let i = 0; i < 3; i++) raw[o++] = rgb[i];
     }
   }
 
