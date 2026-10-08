@@ -14,7 +14,7 @@ export default async function CirclePage({
     <>
       <h1>Your circle</h1>
       <p className="muted">
-        UpOnly is played with your household. Start a circle or join one with its code.
+        ChoreQuest is played with your household. Start a circle or join one with its code.
       </p>
       {error && <p className="error">{error}</p>}
 

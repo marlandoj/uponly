@@ -1,18 +1,22 @@
 import type { Metadata, Viewport } from "next";
-import { Press_Start_2P } from "next/font/google";
+import { Black_Ops_One, Press_Start_2P, Russo_One } from "next/font/google";
+import Link from "next/link";
 import "./globals.css";
 
+// Display: stencil (tactical) · UI: chunky block sans · Accents: pixel
+const stencil = Black_Ops_One({ weight: "400", subsets: ["latin"], display: "swap", variable: "--font-stencil" });
+const chunky = Russo_One({ weight: "400", subsets: ["latin"], display: "swap", variable: "--font-chunky" });
 const pixel = Press_Start_2P({ weight: "400", subsets: ["latin"], display: "swap", variable: "--font-pixel" });
 
 export const metadata: Metadata = {
-  title: "UpOnly",
-  description: "Positive-only chore game. Your chore level only ever rises.",
-  appleWebApp: { capable: true, title: "UpOnly", statusBarStyle: "default" },
+  title: "ChoreQuest",
+  description: "Real chores. Epic loot. The chore game where your level only ever rises.",
+  appleWebApp: { capable: true, title: "ChoreQuest", statusBarStyle: "default" },
   icons: { apple: "/icons/apple-touch-icon.png" },
 };
 
 export const viewport: Viewport = {
-  themeColor: "#0a0a18",
+  themeColor: "#0b0f0c",
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
@@ -20,8 +24,22 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={pixel.variable}>
+    <html lang="en" className={`${stencil.variable} ${chunky.variable} ${pixel.variable}`}>
       <body>
+        <header className="brand-bar">
+          <Link href="/" className="wordmark" aria-label="ChoreQuest home">
+            <span className="logo-blocks" aria-hidden="true">
+              <i />
+              <i />
+              <i />
+              <i />
+            </span>
+            <span>
+              Chore<b>Quest</b>
+            </span>
+          </Link>
+          <span className="tagline">Real chores. Epic loot.</span>
+        </header>
         <main className="shell">{children}</main>
       </body>
     </html>

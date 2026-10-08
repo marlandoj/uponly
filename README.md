@@ -1,6 +1,6 @@
-# UpOnly — Positive-Only Chore Game (Hackyard Yard #4)
+# ChoreQuest — Real chores. Epic loot. (Hackyard Yard #4)
 
-Positive-only chore game: pick a quest with a finish condition, snap a before photo, do the chore, snap an after photo, and an AI-assisted progress check returns pass / unclear / fail (never blocks completion). A second circle member rates the completion via QR / link / 6-char code (3 = Done, 4 = Great, 5 = Legendary).
+ChoreQuest (repo: `uponly`) is a positive-only chore game: pick a quest with a finish condition, snap a before photo, do the chore, snap an after photo, and an AI-assisted progress check returns pass / unclear / fail (never blocks completion). A second circle member rates the completion via QR / link / 6-char code (3 = Done, 4 = Great, 5 = Legendary).
 
 - **Chore level** = 3.50 + 1.50 × (1 − e^−S), S = Σ (rating − 3) × 0.06 × verification (0.8 unclear/photo-only, 1.0 AI-pass), max 2 counted ratings per completion. Ratings never subtract.
 - **Solo completion** instantly awards +10 XP (max 3 credited per day), defeating the Boss HP progress bar.

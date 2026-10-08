@@ -5,7 +5,7 @@ Shoot on two phones; screen-record both.
 
 ## Shot list
 
-1. **Hook (0:00–0:15)** — "Chores are invisible work. UpOnly makes them legendary."
+1. **Hook (0:00–0:15)** — "Chores are invisible work. ChoreQuest makes them legendary."
    Show the home screen: circle name, boss battle bar, members roster.
 
 2. **The mundane task (0:15–0:45)** — Phone A: start a real quest
@@ -23,7 +23,7 @@ Shoot on two phones; screen-record both.
 5. **Leaderboard (1:35–1:50)** — /leaderboard: medals, levels, streaks.
    "Positive-only — ratings never subtract."
 
-6. **Close (1:50–2:00)** — "UpOnly: do the chore, get the glory."
+6. **Close (1:50–2:00)** — "ChoreQuest: real chores, epic loot."
    Show the repo URL.
 
 ## Notes for the edit

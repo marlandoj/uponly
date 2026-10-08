@@ -11,8 +11,8 @@ export default async function LoginPage({
 
   return (
     <>
-      <h1>UpOnly</h1>
-      <p className="muted">The chore game where your level only goes up.</p>
+      <h1>Drop in</h1>
+      <p className="muted">ChoreQuest: real chores, epic loot. Your level only goes up.</p>
       <form action={sendMagicLink} className="card">
         <label>
           Email

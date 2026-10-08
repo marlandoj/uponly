@@ -9,7 +9,7 @@ export default function ShareButton({ url }: { url: string }) {
   async function share() {
     if (navigator.share) {
       try {
-        await navigator.share({ title: "Celebrate my quest on UpOnly", url });
+        await navigator.share({ title: "Celebrate my quest on ChoreQuest", url });
         return;
       } catch (e) {
         if (e instanceof DOMException && e.name === "AbortError") return;
