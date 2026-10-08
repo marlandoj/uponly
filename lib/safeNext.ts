@@ -1,4 +1,4 @@
-/** Cookie that carries the post-sign-in destination through the magic-link round trip. */
+/** Cookie that carries the post-sign-in destination through the /auth/callback round trip. */
 export const NEXT_COOKIE = "uponly_next";
 
 /** Same-origin relative path or null (blocks "//evil.com", "/\\evil.com", absolute URLs). */
