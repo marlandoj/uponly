@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { parseApprovalMode, parseCommentBody, parseRejectionReason } from "@/lib/approval";
+import { parseChoreSize } from "@/lib/choreTiers";
 import { resolveQuestChoice } from "@/lib/quests";
 import { earnRewardsForRun, supabaseRewardStore, type EarnedReward } from "@/lib/rewards";
 import { createClient } from "@/lib/supabase/server";
@@ -13,6 +14,7 @@ export async function startQuest(formData: FormData) {
   const [questKey = "", condition = ""] = String(formData.get("pick") ?? "").split("::");
   const choice = resolveQuestChoice(questKey, condition);
   if (!choice) return fail("Pick a quest and how you'll know it's finished");
+  const size = parseChoreSize(formData.get("size"));
 
   const supabase = await createClient();
   const { data, error } = await supabase
@@ -21,6 +23,7 @@ export async function startQuest(formData: FormData) {
       p_title: choice.quest.title,
       p_finish_condition: choice.finishCondition,
       p_approval_mode: parseApprovalMode(formData.get("approvalMode")),
+      p_chore_size: size,
     })
     .single<{ id: string }>();
   if (error) return fail(error.message);

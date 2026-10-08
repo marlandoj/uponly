@@ -3,17 +3,23 @@ import { redirect } from "next/navigation";
 import { getMyCircle } from "@/lib/circle";
 import { FULFILLMENT_KINDS, FULFILLMENT_LABELS } from "@/lib/fulfillment";
 import { QUESTS } from "@/lib/quests";
-import { GAMES } from "@/lib/rewards";
+import { parseChoreSize } from "@/lib/choreTiers";
+import { GAMES, isGame } from "@/lib/rewards";
 import { createReward } from "../actions";
 import GameLootTemplates from "../GameLootTemplates";
+import LootPicker from "./LootPicker";
 
 export default async function NewRewardPage({
   searchParams,
 }: {
-  searchParams: Promise<{ error?: string }>;
+  searchParams: Promise<{ error?: string; size?: string; tag?: string; games?: string }>;
 }) {
   if (!(await getMyCircle())) redirect("/circle");
-  const { error } = await searchParams;
+  const params = await searchParams;
+  const { error } = params;
+  const size = parseChoreSize(params.size);
+  const games = String(params.games ?? "").split(",").map((s) => s.trim()).filter(isGame);
+  const tag = String(params.tag ?? "").trim().slice(0, 32);
 
   return (
     <>
@@ -25,6 +31,7 @@ export default async function NewRewardPage({
         <p className="muted">One tap adds a credit pack any quest can earn. It drops as a gift card — no in-game purchases.</p>
         <Link href="/rewards/shop" className="button secondary">Browse Fortnite shop</Link>
       </section>
+      {games.length > 0 && <LootPicker games={games} size={size} tag={tag} />}
       <GameLootTemplates from="/rewards/new" />
 
       <form action={createReward} className="card">

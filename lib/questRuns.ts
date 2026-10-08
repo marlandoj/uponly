@@ -1,4 +1,5 @@
 import type { ApprovalMode, ApprovalStatus } from "@/lib/approval";
+import type { ChoreSize } from "@/lib/choreTiers";
 import type { Verification } from "@/lib/rating";
 import { createClient } from "@/lib/supabase/server";
 
@@ -35,12 +36,14 @@ export type QuestRun = {
   rejection_reason: string | null;
   /** 1 for the first finish, +1 per resubmit after a redo request (0010). */
   attempt_no: number;
+  /** Chore value tier (0011); sets the suggested reward value. */
+  chore_size: ChoreSize;
 };
 
 export const QUEST_RUN_COLUMNS =
   "id, user_id, circle_id, quest_key, title, finish_condition, status, before_path, after_path, started_at, completed_at, " +
   "verification, verification_reason, credited, completion_xp, xp_after_completion, rating_code, " +
-  "approval_mode, approval_status, approved_by, approved_at, rejection_reason, attempt_no";
+  "approval_mode, approval_status, approved_by, approved_at, rejection_reason, attempt_no, chore_size";
 
 /**
  * A run the caller can see, or null: their own, or a circle-mate's (RLS, 0009).
