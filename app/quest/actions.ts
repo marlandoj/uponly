@@ -1,7 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { parseApprovalMode, parseCommentBody } from "@/lib/approval";
+import { parseApprovalMode, parseCommentBody, parseRejectionReason } from "@/lib/approval";
 import { resolveQuestChoice } from "@/lib/quests";
 import { earnRewardsForRun, supabaseRewardStore, type EarnedReward } from "@/lib/rewards";
 import { createClient } from "@/lib/supabase/server";
@@ -89,18 +89,26 @@ export async function submitComment(formData: FormData) {
 
 /**
  * A giver approves a finished run (rewards drop for its player) or asks for a
- * redo. approve_run enforces who may review; on approval the earn flow runs
+ * redo with a required note (what to fix, 1–300 chars — approve_run re-checks
+ * it). approve_run enforces who may review; on approval the earn flow runs
  * with the giver's session (record_reward_earning allows circle-mates once a
  * run is approved) and never fails the approval.
  */
 export async function approveRun(
   runId: string,
   approve: boolean,
+  reason: unknown = null,
 ): Promise<{ error: string | null; rewards: EarnedReward[] }> {
   if (!isRunId(runId)) return { error: "Quest not found", rewards: [] };
+  let pReason: string | null = null;
+  if (!approve) {
+    const parsed = parseRejectionReason(reason);
+    if (!parsed.ok) return { error: parsed.error, rewards: [] };
+    pReason = parsed.reason;
+  }
   const supabase = await createClient();
   const { data: run, error } = await supabase
-    .rpc("approve_run", { p_run_id: runId, p_approve: approve })
+    .rpc("approve_run", { p_run_id: runId, p_approve: approve, p_reason: pReason })
     .single<{ id: string; user_id: string; circle_id: string; quest_key: string }>();
   if (error) return { error: error.message, rewards: [] };
   const rewards = approve ? await earnRewardsForRun(supabaseRewardStore(supabase), run) : [];
@@ -110,7 +118,7 @@ export async function approveRun(
 export async function submitReview(formData: FormData) {
   const id = String(formData.get("id") ?? "");
   const approve = formData.get("decision") === "approve";
-  const { error, rewards } = await approveRun(id, approve);
+  const { error, rewards } = await approveRun(id, approve, formData.get("reason"));
   if (error) redirect(runPage(id, `?error=${encodeURIComponent(error)}`));
   // The page reloads the loot from reward_earnings; the flag plays the drop.
   redirect(runPage(id, approve ? (rewards.length > 0 ? "?approved=drop" : "?approved=1") : "?redo=1"));

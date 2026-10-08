@@ -31,12 +31,16 @@ export type QuestRun = {
   approval_status: ApprovalStatus;
   approved_by: string | null;
   approved_at: string | null;
+  /** The giver's "here's what to fix" note from the last redo request; cleared on approval (0010). */
+  rejection_reason: string | null;
+  /** 1 for the first finish, +1 per resubmit after a redo request (0010). */
+  attempt_no: number;
 };
 
-const COLUMNS =
+export const QUEST_RUN_COLUMNS =
   "id, user_id, circle_id, quest_key, title, finish_condition, status, before_path, after_path, started_at, completed_at, " +
   "verification, verification_reason, credited, completion_xp, xp_after_completion, rating_code, " +
-  "approval_mode, approval_status, approved_by, approved_at";
+  "approval_mode, approval_status, approved_by, approved_at, rejection_reason, attempt_no";
 
 /**
  * A run the caller can see, or null: their own, or a circle-mate's (RLS, 0009).
@@ -47,7 +51,7 @@ export async function getQuestRun(id: string): Promise<QuestRun | null> {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("quest_runs")
-    .select(COLUMNS)
+    .select(QUEST_RUN_COLUMNS)
     .eq("id", id)
     .maybeSingle<QuestRun>();
   if (error) throw error;
@@ -64,7 +68,7 @@ export async function getOpenQuestRun(): Promise<QuestRun | null> {
   // Circle-mates' runs are readable too, so filter to the caller explicitly.
   const { data, error } = await supabase
     .from("quest_runs")
-    .select(COLUMNS)
+    .select(QUEST_RUN_COLUMNS)
     .eq("user_id", user.id)
     .in("status", ["draft", "active"])
     .maybeSingle<QuestRun>();

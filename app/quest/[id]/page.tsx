@@ -11,6 +11,7 @@ import Celebration from "./Celebration";
 import Comments from "./Comments";
 import Evidence from "./Evidence";
 import QuestRunner from "./QuestRunner";
+import RejectForm from "./RejectForm";
 import RewardDrop from "./RewardDrop";
 
 // The full-screen reward drop plays on the first view after earning.
@@ -72,6 +73,7 @@ async function OwnerView({ run, error }: { run: QuestRun; error?: string }) {
           startedAt={run.started_at}
           serverNow={Date.now()}
           redo={run.status === "active" && run.approval_status === "rejected"}
+          rejectionReason={run.rejection_reason}
         />
       ) : run.status === "completed" && !approved ? (
         <section className="card waiting">
@@ -157,21 +159,27 @@ async function GiverView({ run, query }: { run: QuestRun; query: { error?: strin
       {completed && evidence ? (
         <section className={`card review ${pending ? "pending" : ""}`}>
           <h2>{pending ? "Review the finish" : "Before & after"}</h2>
+          {(pending || run.attempt_no > 1) && <p className="attempt-chip">Attempt {run.attempt_no}</p>}
+          {pending && run.attempt_no > 1 && run.rejection_reason && (
+            <p className="last-reason">
+              <span className="muted">Last time you asked:</span> {run.rejection_reason}
+            </p>
+          )}
           <div className="photos">
             <Evidence label="Before" src={evidence.before} path={run.before_path} />
             <Evidence label="After" src={evidence.after} path={run.after_path} />
           </div>
           <ProgressCheck run={run} giver />
           {pending && (
-            <form action={submitReview} className="review-actions">
-              <input type="hidden" name="id" value={run.id} />
-              <button type="submit" name="decision" value="approve" className="approve">
-                ✅ Approve
-              </button>
-              <button type="submit" name="decision" value="redo" className="redo-button">
-                🔁 Ask to redo
-              </button>
-            </form>
+            <div className="review-actions">
+              <form action={submitReview}>
+                <input type="hidden" name="id" value={run.id} />
+                <button type="submit" name="decision" value="approve" className="approve">
+                  ✅ Approve
+                </button>
+              </form>
+              <RejectForm runId={run.id} />
+            </div>
           )}
           {approved && <p className="notice">✅ Approved — loot dropped for {name}.</p>}
         </section>
@@ -179,6 +187,11 @@ async function GiverView({ run, query }: { run: QuestRun; query: { error?: strin
         <section className="card">
           <h2>🔁 Redo requested</h2>
           <p>{query.redo ? "Sent back. " : ""}{name} will take another after photo or clip. You&apos;ll review it here.</p>
+          {run.rejection_reason && (
+            <p className="last-reason">
+              <span className="muted">What to fix:</span> {run.rejection_reason}
+            </p>
+          )}
         </section>
       ) : run.status === "abandoned" ? (
         <section className="card">

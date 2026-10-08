@@ -14,9 +14,11 @@ type Props = {
   serverNow: number;
   /** A giver asked for a redo: only the after evidence is re-shot. */
   redo?: boolean;
+  /** The giver's "what to fix" note for that redo. */
+  rejectionReason?: string | null;
 };
 
-export default function QuestRunner({ runId, status, startedAt, serverNow, redo = false }: Props) {
+export default function QuestRunner({ runId, status, startedAt, serverNow, redo = false, rejectionReason = null }: Props) {
   const router = useRouter();
   // Captured once on mount; the server re-checks the 4-minute rule regardless.
   const [skew] = useState(() => serverNow - Date.now());
@@ -61,7 +63,13 @@ export default function QuestRunner({ runId, status, startedAt, serverNow, redo 
     return (
       <section className="card redo">
         <h2>🔁 Asked to redo</h2>
-        <p>Your reviewer wants another look. Finish it up, then take another after photo or clip.</p>
+        {rejectionReason && (
+          <div className="fix-callout" role="status">
+            <p className="fix-callout-title">Not quite — here&apos;s what to fix:</p>
+            <p className="fix-callout-reason">{rejectionReason}</p>
+          </div>
+        )}
+        <p>{rejectionReason ? "Fix it up" : "Your reviewer wants another look. Finish it up"}, then take another after photo or clip.</p>
         <CameraCapture label="Open camera" busyLabel="Uploading…" onCapture={(p) => upload("after", p)} />
       </section>
     );

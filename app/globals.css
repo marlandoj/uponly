@@ -675,8 +675,8 @@ fieldset.approval-mode label.choice { align-items: flex-start; padding: 0.35rem 
 fieldset.approval-mode label.choice input { margin-top: 0.15rem; flex: none; }
 
 .card.review.pending { --hud: var(--gold); }
-.review-actions { display: grid; grid-template-columns: 1fr; gap: 0.75rem; }
-@media (min-width: 24rem) { .review-actions { grid-template-columns: 1fr 1fr; } }
+.review-actions { display: flex; flex-direction: column; gap: 1rem; }
+.review-actions form { display: flex; flex-direction: column; gap: 0.6rem; }
 .review-actions button.approve {
   background: linear-gradient(135deg, #2bbf2b, var(--lime));
   color: #08130a;
@@ -692,6 +692,82 @@ fieldset.approval-mode label.choice input { margin-top: 0.15rem; flex: none; }
 .card.waiting .verdict { text-align: left; }
 .waiting-icon { font-size: 2.75rem; line-height: 1; }
 .card.redo { --hud: var(--orange); }
+
+/* Review queue + structured rejection (0010) */
+.card.review-queue { --hud: var(--magenta); border-color: rgb(255 47 179 / 0.45); }
+ul.queue-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.6rem; }
+a.queue-row {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  padding: 0.6rem;
+  color: var(--text);
+  text-decoration: none;
+  background: linear-gradient(90deg, var(--magenta) 0 4px, rgb(0 0 0 / 0.3) 4px);
+  border: 2px solid var(--line);
+  border-radius: 0.4rem;
+  box-shadow: 0 4px 0 #050706;
+}
+a.queue-row:active { transform: translateY(3px); box-shadow: 0 1px 0 #050706; }
+.queue-thumbs { display: flex; gap: 0.3rem; flex: none; }
+.queue-thumb {
+  width: 3.5rem;
+  height: 3.5rem;
+  object-fit: cover;
+  border-radius: 0.25rem;
+  border: 2px solid var(--purple);
+  background: #0a0d0b;
+}
+.queue-thumb.missing { display: grid; place-items: center; color: var(--muted); font-family: var(--pixel); font-size: 0.7rem; border-color: var(--line); }
+.queue-info { display: flex; flex-direction: column; gap: 0.2rem; min-width: 0; }
+.queue-title { font-family: var(--chunky); font-weight: 400; letter-spacing: 0.03em; overflow-wrap: anywhere; }
+.queue-player { font-size: 0.9rem; overflow-wrap: anywhere; }
+.queue-tag { color: var(--cyan); }
+.queue-meta { display: flex; flex-wrap: wrap; gap: 0.3rem; }
+.verdict-badge, .attempt-chip {
+  align-self: flex-start;
+  font-family: var(--chunky);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 0.1rem 0.5rem;
+  border-radius: 999px;
+  border: 2px solid var(--line);
+  background: var(--card-2);
+}
+.verdict-badge.pass { color: var(--lime); border-color: rgb(125 255 42 / 0.6); }
+.verdict-badge.warn { color: var(--gold); border-color: rgb(255 216 77 / 0.5); }
+.verdict-badge.photo { color: var(--muted); }
+.attempt-chip { color: var(--magenta); border-color: rgb(255 47 179 / 0.6); margin: 0; }
+
+.last-reason { margin: 0; padding: 0.5rem 0.7rem; border-left: 3px solid var(--orange); background: rgb(0 0 0 / 0.25); overflow-wrap: anywhere; }
+
+.reject-form h3 { margin: 0; font-family: var(--chunky); font-weight: 400; font-size: 0.95rem; letter-spacing: 0.03em; }
+.reject-chips { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.reject-form button.reject-chip {
+  min-height: 2.25rem;
+  padding: 0.25rem 0.7rem;
+  font-size: 0.75rem;
+  border-radius: 999px;
+  background: var(--card-2);
+  color: var(--text);
+  border: 2px solid var(--line);
+  text-shadow: none;
+  box-shadow: 0 3px 0 #050706;
+}
+.reject-form button.reject-chip.on { background: var(--epic); border-color: var(--magenta); box-shadow: 0 3px 0 #4a148f; }
+.char-count { margin: 0; text-align: right; font-size: 0.75rem; }
+
+.fix-callout {
+  padding: 0.75rem 0.9rem;
+  border: 2px solid var(--magenta);
+  border-radius: 0.4rem;
+  background: linear-gradient(135deg, rgb(139 61 255 / 0.25), rgb(255 47 179 / 0.15));
+  box-shadow: 0 0 18px rgb(255 47 179 / 0.25);
+}
+.fix-callout p { margin: 0; }
+.fix-callout-title { font-family: var(--chunky); text-transform: uppercase; letter-spacing: 0.04em; color: var(--gold); font-size: 0.85rem; }
+.fix-callout .fix-callout-reason { margin-top: 0.35rem; font-size: 1.15rem; font-weight: 700; overflow-wrap: anywhere; white-space: pre-wrap; }
 
 .card.comments { --hud: var(--purple); }
 ol.comment-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.6rem; }

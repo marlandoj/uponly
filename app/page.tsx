@@ -3,8 +3,10 @@ import { redirect } from "next/navigation";
 import { getMyCircle } from "@/lib/circle";
 import { joinInviteUrl } from "@/lib/joinInvite";
 import { qrDataUrl } from "@/lib/qr";
+import { getReviewQueue } from "@/lib/reviewData";
 import { createClient } from "@/lib/supabase/server";
 import { BossBar } from "./Celebrate";
+import ReviewQueue from "./ReviewQueue";
 import { signOut } from "./login/actions";
 
 type Member = {
@@ -29,6 +31,8 @@ export default async function Home() {
     data: { user },
   } = await supabase.auth.getUser();
   const me = members.find((m) => m.profiles?.id === user?.id)?.profiles;
+  const queue = me ? await getReviewQueue(me.id, circle.id) : [];
+  const players = new Map(members.flatMap((m) => (m.profiles ? [[m.profiles.id, m.profiles] as const] : [])));
 
   return (
     <>
@@ -38,6 +42,7 @@ export default async function Home() {
           {me.gamer_tag ? <>🎮 Loot bound for: <strong>{me.gamer_tag}</strong></> : "🎮 Set your gamer tag"}
         </Link>
       )}
+      {queue.length > 0 && <ReviewQueue queue={queue} players={players} />}
 
       <Link href="/quest" className="button">Start a quest</Link>
       <Link href="/r" className="button secondary">Celebrate a circle-mate&apos;s quest</Link>

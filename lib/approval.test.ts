@@ -2,10 +2,15 @@ import { describe, expect, it } from "vitest";
 import {
   APPROVAL_MODES,
   MAX_COMMENT_CHARS,
+  MAX_REJECTION_CHARS,
+  REJECTION_CHIPS,
   canPostComment,
   canReviewRun,
+  nextAttemptNo,
   parseApprovalMode,
   parseCommentBody,
+  parseRejectionReason,
+  reviewQueue,
   routeAfterSubmit,
   type ReviewableRun,
 } from "./approval";
@@ -89,5 +94,82 @@ describe("comments", () => {
     expect(canPostComment("a", "a", true)).toBe(true);
     expect(canPostComment("a", "b", true)).toBe(false);
     expect(canPostComment("a", "a", false)).toBe(false);
+  });
+});
+
+describe("reviewQueue (home page 'Waiting for review')", () => {
+  const PLAYER = "11111111-1111-1111-1111-111111111111";
+  const GIVER = "22222222-2222-2222-2222-222222222222";
+  const run = (id: string, over: Partial<ReviewableRun & { completed_at: string }> = {}) => ({
+    id,
+    user_id: PLAYER,
+    status: "completed",
+    approval_status: "pending" as const,
+    completed_at: "2026-10-08T10:00:00Z",
+    ...over,
+  });
+
+  it("a pending finish shows up for a circle-mate giver", () => {
+    expect(reviewQueue(GIVER, true, [run("a")]).map((r) => r.id)).toEqual(["a"]);
+  });
+
+  it("is hidden from the run's owner", () => {
+    expect(reviewQueue(PLAYER, true, [run("a")])).toEqual([]);
+  });
+
+  it("is hidden once approved (or rejected, or not finished)", () => {
+    expect(
+      reviewQueue(GIVER, true, [
+        run("approved", { approval_status: "approved" }),
+        run("rejected", { status: "active", approval_status: "rejected" }),
+        run("active", { status: "active" }),
+      ]),
+    ).toEqual([]);
+  });
+
+  it("is empty for non-members", () => {
+    expect(reviewQueue(GIVER, false, [run("a")])).toEqual([]);
+  });
+
+  it("lists newest finishes first and skips the viewer's own", () => {
+    const queue = reviewQueue(GIVER, true, [
+      run("old", { completed_at: "2026-10-07T09:00:00Z" }),
+      run("mine", { user_id: GIVER, completed_at: "2026-10-08T12:00:00Z" }),
+      run("new", { completed_at: "2026-10-08T11:00:00Z" }),
+    ]);
+    expect(queue.map((r) => r.id)).toEqual(["new", "old"]);
+  });
+});
+
+describe("parseRejectionReason (mirrors approve_run's p_reason)", () => {
+  it("trims and accepts 1–300 chars, including a bare quick-pick chip", () => {
+    expect(parseRejectionReason("  Towels still on the floor  ")).toEqual({ ok: true, reason: "Towels still on the floor" });
+    for (const chip of REJECTION_CHIPS) expect(parseRejectionReason(chip)).toEqual({ ok: true, reason: chip });
+    expect(parseRejectionReason("x".repeat(MAX_REJECTION_CHARS))).toMatchObject({ ok: true });
+  });
+
+  it("requires a note: empty, whitespace-only, missing and too long are rejected", () => {
+    expect(MAX_REJECTION_CHARS).toBe(300);
+    for (const bad of ["", "   \n\t ", null, undefined, 42, "x".repeat(301)]) {
+      expect(parseRejectionReason(bad)).toMatchObject({ ok: false });
+    }
+  });
+});
+
+describe("nextAttemptNo (mirrors complete_quest)", () => {
+  it("a first submit stays attempt 1", () => {
+    expect(nextAttemptNo({ attempt_no: 1, approval_status: "pending" })).toBe(1);
+  });
+
+  it("each resubmit after a rejection is the next attempt", () => {
+    let run = { attempt_no: 1, approval_status: "rejected" as const };
+    expect(nextAttemptNo(run)).toBe(2);
+    run = { attempt_no: nextAttemptNo(run), approval_status: "rejected" };
+    expect(nextAttemptNo(run)).toBe(3);
+  });
+
+  it("never increments without a rejection", () => {
+    expect(nextAttemptNo({ attempt_no: 2, approval_status: "pending" })).toBe(2);
+    expect(nextAttemptNo({ attempt_no: 2, approval_status: "approved" })).toBe(2);
   });
 });

@@ -1,9 +1,11 @@
+import { reviewQueue } from "@/lib/approval";
 import { PHOTO_URL_TTL_SECONDS, isEvidencePathFor } from "@/lib/celebration";
-import type { QuestRun } from "@/lib/questRuns";
+import { QUEST_RUN_COLUMNS, type QuestRun } from "@/lib/questRuns";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 
-// Page reads for the run page's review + comments (0009_visual_verification.sql).
+// Page reads for the run page's review + comments (0009_visual_verification.sql)
+// and the circle home's review queue (0010_review_queue.sql).
 
 export type RunComment = {
   id: string;
@@ -48,4 +50,31 @@ export async function signRunEvidence(
   }
   const url = (p: string | null) => data.find((d) => d.path === p && !d.error)?.signedUrl ?? null;
   return { before: url(run.before_path), after: url(run.after_path) };
+}
+
+const QUEUE_LIMIT = 20;
+
+export type QueuedRun = { run: QuestRun; evidence: RunEvidence };
+
+/**
+ * Circle-mates' finishes waiting for the viewer's review, newest first, with
+ * signed thumbnails. RLS (0009 "circle read") limits the read to the viewer's
+ * circle — the membership check signRunEvidence relies on. Empty for anyone
+ * whose only pending run is their own.
+ */
+export async function getReviewQueue(viewerId: string, circleId: string): Promise<QueuedRun[]> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("quest_runs")
+    .select(QUEST_RUN_COLUMNS)
+    .eq("circle_id", circleId)
+    .eq("status", "completed")
+    .eq("approval_status", "pending")
+    .neq("user_id", viewerId)
+    .order("completed_at", { ascending: false })
+    .limit(QUEUE_LIMIT)
+    .overrideTypes<QuestRun[], { merge: false }>();
+  if (error) throw error;
+  const runs = reviewQueue(viewerId, true, data);
+  return Promise.all(runs.map(async (run) => ({ run, evidence: await signRunEvidence(run) })));
 }

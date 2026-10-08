@@ -1,8 +1,9 @@
 import type { Verification } from "@/lib/rating";
 
 // Who approves a finished quest, and what happens when they do. This is the
-// reference copy; 0009_visual_verification.sql (approve_run,
-// mark_run_ai_approved, run_comments) is the enforcing copy.
+// reference copy; 0009_visual_verification.sql (mark_run_ai_approved,
+// run_comments) and 0010_review_queue.sql (approve_run, complete_quest's
+// attempt count) are the enforcing copies.
 
 export const APPROVAL_MODES = ["ai_instant", "giver_approves"] as const;
 export type ApprovalMode = (typeof APPROVAL_MODES)[number];
@@ -37,6 +38,40 @@ export function canReviewRun(viewerId: string, isCircleMember: boolean, run: Rev
   if (run.user_id === viewerId) return { ok: false, reason: "own_run" };
   if (run.status !== "completed" || run.approval_status !== "pending") return { ok: false, reason: "not_pending" };
   return { ok: true };
+}
+
+/** The giver's review queue: circle-mates' finishes waiting on a review, newest first. */
+export function reviewQueue<R extends ReviewableRun & { completed_at: string | null }>(
+  viewerId: string,
+  isCircleMember: boolean,
+  runs: R[],
+): R[] {
+  return runs
+    .filter((r) => canReviewRun(viewerId, isCircleMember, r).ok)
+    .sort((a, b) => Date.parse(b.completed_at ?? "") - Date.parse(a.completed_at ?? "") || 0);
+}
+
+export const MAX_REJECTION_CHARS = 300;
+
+/** Quick picks for "ask to redo"; each prefills the (always required) note. */
+export const REJECTION_CHIPS = [
+  "Not finished",
+  "Wrong spot",
+  "Photo/video unclear",
+  "Doesn't match the before photo",
+] as const;
+
+/** Trimmed redo note (1–300 chars, matching approve_run's p_reason), or an error. */
+export function parseRejectionReason(raw: unknown): { ok: true; reason: string } | { ok: false; error: string } {
+  const reason = typeof raw === "string" ? raw.trim() : "";
+  if (reason.length === 0) return { ok: false, error: "Tell them what to fix before sending it back" };
+  if (reason.length > MAX_REJECTION_CHARS) return { ok: false, error: `Keep the note under ${MAX_REJECTION_CHARS} characters` };
+  return { ok: true, reason };
+}
+
+/** Mirrors complete_quest: a resubmit after a rejection is the next attempt; a first finish stays 1. */
+export function nextAttemptNo(run: { attempt_no: number; approval_status: ApprovalStatus }): number {
+  return run.approval_status === "rejected" ? run.attempt_no + 1 : run.attempt_no;
 }
 
 export const MAX_COMMENT_CHARS = 500;
