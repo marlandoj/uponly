@@ -18,7 +18,7 @@ ChoreQuest (repo: `uponly`) is a positive-only chore game: pick a quest with a f
    - `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`
    - `SUPABASE_SERVICE_ROLE_KEY`, `OPENAI_API_KEY` (server-side only)
    - `BASE_SEPOLIA_APP_SIGNER` / `BASE_SEPOLIA_RPC_URL` (server-side only)
-3. Run the Supabase migrations in `supabase/migrations/` in order (`0001_init.sql`, `0002_quests.sql`, `0003_progress_check.sql`, `0004_celebrations.sql`, `0005_streaks.sql`, `0006_mints.sql`, `0007_rewards.sql`, `0008_game_rewards.sql`) (RLS on every table; explicit least-privilege GRANTs — new tables created after 2026-10-30 are not auto-exposed to the Data API).
+3. Run the Supabase migrations in `supabase/migrations/` in order (`0001_init.sql`, `0002_quests.sql`, `0003_progress_check.sql`, `0004_celebrations.sql`, `0005_streaks.sql`, `0006_mints.sql`, `0007_rewards.sql`, `0008_game_rewards.sql`, `0009_visual_verification.sql`, `0010_review_queue.sql`) (RLS on every table; explicit least-privilege GRANTs — new tables created after 2026-10-30 are not auto-exposed to the Data API).
 4. In Supabase Auth → URL Configuration, add `http://localhost:3000/auth/callback` (and your deployed origin's `/auth/callback`) to Redirect URLs. Sign-in is email magic link only (no OAuth).
 5. `npm run dev`
 

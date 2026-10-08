@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { checkEvidence } from "@/lib/evidence";
 import { MIN_QUEST_SECONDS, formatClock, secondsUntilUnlock } from "@/lib/quests";
 import CameraCapture from "./CameraCapture";
 
@@ -11,9 +12,13 @@ type Props = {
   startedAt: string | null;
   /** Server clock at render time, used to correct for a skewed device clock. */
   serverNow: number;
+  /** A giver asked for a redo: only the after evidence is re-shot. */
+  redo?: boolean;
+  /** The giver's "what to fix" note for that redo. */
+  rejectionReason?: string | null;
 };
 
-export default function QuestRunner({ runId, status, startedAt, serverNow }: Props) {
+export default function QuestRunner({ runId, status, startedAt, serverNow, redo = false, rejectionReason = null }: Props) {
   const router = useRouter();
   // Captured once on mount; the server re-checks the 4-minute rule regardless.
   const [skew] = useState(() => serverNow - Date.now());
@@ -25,10 +30,12 @@ export default function QuestRunner({ runId, status, startedAt, serverNow }: Pro
     return () => clearInterval(t);
   }, [status, skew]);
 
-  async function upload(kind: "before" | "after", photo: Blob) {
+  async function upload(kind: "before" | "after", evidence: Blob) {
+    const type = checkEvidence(evidence.type, evidence.size);
+    if (!type.ok) throw new Error(type.error);
     const body = new FormData();
     body.set("kind", kind);
-    body.set("photo", photo, `${kind}.jpg`);
+    body.set("photo", evidence, `${kind}.${type.ext}`);
     const res = await fetch(`/api/quests/${runId}/photo`, { method: "POST", body });
     if (!res.ok) {
       const { error } = await res.json().catch(() => ({ error: "Upload failed." }));
@@ -52,6 +59,22 @@ export default function QuestRunner({ runId, status, startedAt, serverNow }: Pro
   const wait = secondsUntilUnlock(startedMs, now);
   const progress = Math.min(1, elapsed / MIN_QUEST_SECONDS);
 
+  if (redo) {
+    return (
+      <section className="card redo">
+        <h2>🔁 Asked to redo</h2>
+        {rejectionReason && (
+          <div className="fix-callout" role="status">
+            <p className="fix-callout-title">Not quite — here&apos;s what to fix:</p>
+            <p className="fix-callout-reason">{rejectionReason}</p>
+          </div>
+        )}
+        <p>{rejectionReason ? "Fix it up" : "Your reviewer wants another look. Finish it up"}, then take another after photo or clip.</p>
+        <CameraCapture label="Open camera" busyLabel="Uploading…" onCapture={(p) => upload("after", p)} />
+      </section>
+    );
+  }
+
   return (
     <section className="card">
       <h2>2 · Do the chore</h2>
@@ -68,7 +91,7 @@ export default function QuestRunner({ runId, status, startedAt, serverNow }: Pro
       {wait > 0 ? (
         <p className="muted">After photo unlocks in {formatClock(wait)} — quests take at least 4 minutes.</p>
       ) : (
-        <p className="notice">Ready when you are. Snap the finished result.</p>
+        <p className="notice">Ready when you are. Snap or film the finished result.</p>
       )}
       <h2>3 · After photo</h2>
       <CameraCapture
