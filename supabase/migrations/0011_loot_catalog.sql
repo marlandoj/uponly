@@ -132,12 +132,16 @@ alter table public.quest_runs
 -- pattern): two candidates for a 3-argument call would be ambiguous for
 -- PostgREST. DROP takes the old grants with it.
 -- ---------------------------------------------------------------------------
-drop function public.start_quest(text, text, text);
+-- 0009/0010 (applied to the live DB before this branch) redefined start_quest
+-- as 4-arg with p_approval_mode. Reconcile: drop the 4-arg, create a 5-arg
+-- carrying both p_approval_mode and p_chore_size.
+drop function public.start_quest(text, text, text, text);
 
 create function public.start_quest(
   p_quest_key        text,
   p_title            text,
   p_finish_condition text,
+  p_approval_mode    text default 'ai_instant',
   p_chore_size       text default 'standard'
 )
 returns public.quest_runs
@@ -155,6 +159,9 @@ begin
     raise exception 'not authenticated' using errcode = '28000';
   end if;
 
+  if p_approval_mode is null or p_approval_mode not in ('ai_instant', 'giver_approves') then
+    raise exception 'approval mode must be ai_instant or giver_approves' using errcode = '22023';
+  end if;
   if v_size not in ('quick', 'standard', 'big') then
     raise exception 'chore size must be quick, standard or big' using errcode = '22023';
   end if;
@@ -164,8 +171,8 @@ begin
     raise exception 'join a circle first' using errcode = 'P0002';
   end if;
 
-  insert into public.quest_runs (user_id, circle_id, quest_key, title, finish_condition, chore_size)
-  values (v_uid, v_circle, p_quest_key, btrim(p_title), btrim(p_finish_condition), v_size)
+  insert into public.quest_runs (user_id, circle_id, quest_key, title, finish_condition, approval_mode, chore_size)
+  values (v_uid, v_circle, p_quest_key, btrim(p_title), btrim(p_finish_condition), p_approval_mode, v_size)
   returning * into v_run;
 
   return v_run;
@@ -175,5 +182,5 @@ exception
 end;
 $$;
 
-revoke execute on function public.start_quest(text, text, text, text) from public, anon, authenticated;
-grant execute on function public.start_quest(text, text, text, text) to authenticated, service_role;
+revoke execute on function public.start_quest(text, text, text, text, text) from public, anon, authenticated;
+grant execute on function public.start_quest(text, text, text, text, text) to authenticated, service_role;
