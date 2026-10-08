@@ -1,3 +1,4 @@
+import { EVIDENCE_EXTS, evidencePath } from "@/lib/evidence";
 import { normalizeJoinCode } from "@/lib/joinCode";
 import type { Rating } from "@/lib/rating";
 
@@ -52,9 +53,11 @@ export const NOT_COUNTED_MESSAGES: Record<NotCountedReason, string> = {
 export const ratingPath = (code: string) => `/r/${code}`;
 
 /**
- * True only for this run's own evidence keys ("<player>/<run>/{before,after}.jpg").
+ * True only for this run's own evidence keys ("<player>/<run>/{before,after}.{jpg,mp4,webm}").
  * Defence in depth before signing with the service-role client.
  */
 export function isEvidencePathFor(path: string | null, playerId: string, runId: string): path is string {
-  return path === `${playerId}/${runId}/before.jpg` || path === `${playerId}/${runId}/after.jpg`;
+  return EVIDENCE_EXTS.some(
+    (ext) => path === evidencePath(playerId, runId, "before", ext) || path === evidencePath(playerId, runId, "after", ext),
+  );
 }

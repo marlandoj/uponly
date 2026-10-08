@@ -1,3 +1,5 @@
+import { evidencePath, type EvidenceExt } from "@/lib/evidence";
+
 // Must match the interval in supabase/migrations/0002_quests.sql.
 export const MIN_QUEST_SECONDS = 4 * 60;
 
@@ -74,5 +76,6 @@ export function formatClock(totalSeconds: number): string {
   return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
 }
 
-export const photoPath = (userId: string, runId: string, kind: "before" | "after") =>
-  `${userId}/${runId}/${kind}.jpg`;
+/** JPEG by default; clips pass their extension (see lib/evidence.ts). */
+export const photoPath = (userId: string, runId: string, kind: "before" | "after", ext: EvidenceExt = "jpg") =>
+  evidencePath(userId, runId, kind, ext);

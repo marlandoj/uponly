@@ -5,6 +5,7 @@ import { bossesDefeatedBetween } from "@/lib/boss";
 import { NOT_COUNTED_MESSAGES, RATING_LABELS, normalizeRatingCode, type Celebration } from "@/lib/celebration";
 import { getCelebration, signCelebrationPhotos } from "@/lib/celebrationData";
 import { isRating } from "@/lib/rating";
+import Evidence from "@/app/quest/[id]/Evidence";
 import { rateQuest } from "../actions";
 
 // Signed photo URLs expire after 5 minutes; never serve this page from cache.
@@ -51,8 +52,8 @@ export default async function RatePage({
 
       <section className="card">
         <div className="photos">
-          <Photo label="Before" src={photos.before} />
-          <Photo label="After" src={photos.after} />
+          <Evidence label="Before" src={photos.before} path={c.before_path} />
+          <Evidence label="After" src={photos.after} path={c.after_path} />
         </div>
         <p className="muted">
           {c.verification === "pass"
@@ -65,20 +66,6 @@ export default async function RatePage({
 
       <Link href="/" className="muted center">Back to circle</Link>
     </>
-  );
-}
-
-function Photo({ label, src }: { label: string; src: string | null }) {
-  return (
-    <figure>
-      {src ? (
-        // eslint-disable-next-line @next/next/no-img-element -- short-lived signed URL
-        <img src={src} alt={`${label} photo`} />
-      ) : (
-        <div className="photo-missing">Photo unavailable</div>
-      )}
-      <figcaption>{label}</figcaption>
-    </figure>
   );
 }
 

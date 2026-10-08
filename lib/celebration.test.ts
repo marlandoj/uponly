@@ -8,6 +8,8 @@ describe("isEvidencePathFor", () => {
   it("accepts only this run's before/after keys", () => {
     expect(isEvidencePathFor(`${P}/${R}/before.jpg`, P, R)).toBe(true);
     expect(isEvidencePathFor(`${P}/${R}/after.jpg`, P, R)).toBe(true);
+    expect(isEvidencePathFor(`${P}/${R}/before.mp4`, P, R)).toBe(true);
+    expect(isEvidencePathFor(`${P}/${R}/after.webm`, P, R)).toBe(true);
   });
 
   it("refuses other players, other runs, odd names and null", () => {

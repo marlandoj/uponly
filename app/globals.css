@@ -334,7 +334,7 @@ img.qr {
 }
 .photos { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; }
 .photos figure { margin: 0; display: flex; flex-direction: column; gap: 0.25rem; text-align: center; }
-.photos img, .photo-missing {
+.photos img, .photos video, .photo-missing {
   width: 100%;
   aspect-ratio: 3 / 4;
   object-fit: cover;
@@ -631,3 +631,78 @@ ul.loot-grid {
 .vbucks { font-family: var(--chunky); color: var(--cyan); }
 img.loot-sprite { width: 10rem; height: 10rem; filter: drop-shadow(0 0 22px rgb(255 216 77 / 0.65)); background: none; box-shadow: none; }
 img.inline-sprite { width: 1.75rem; height: 1.75rem; vertical-align: middle; margin-right: 0.4rem; }
+
+/* Visual verification: capture mode, review, waiting, comments */
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+.capture-mode { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+.capture-mode button {
+  min-height: 2.5rem;
+  font-size: 0.85rem;
+  background: var(--card-2);
+  border: 2px solid var(--line);
+  box-shadow: 0 3px 0 #050706;
+  text-shadow: none;
+}
+.capture-mode button.on { background: var(--rare); border-color: var(--cyan); box-shadow: 0 3px 0 #0d4a99; }
+.rec {
+  font-family: var(--pixel);
+  font-size: 0.7rem;
+  color: #ff2f5d;
+  text-align: center;
+  animation: rec-blink 1s steps(2) infinite;
+}
+@keyframes rec-blink { 50% { opacity: 0.35; } }
+@media (prefers-reduced-motion: reduce) { .rec { animation: none; } }
+
+.mode-chip {
+  align-self: flex-start;
+  font-family: var(--chunky);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  border: 2px solid var(--line);
+  background: var(--card-2);
+}
+.mode-chip.ai_instant { color: var(--cyan); border-color: rgb(34 228 255 / 0.5); }
+.mode-chip.giver_approves { color: var(--gold); border-color: rgb(255 216 77 / 0.5); }
+fieldset.approval-mode { --hud: var(--cyan); }
+fieldset.approval-mode label.choice { align-items: flex-start; padding: 0.35rem 0; }
+fieldset.approval-mode label.choice input { margin-top: 0.15rem; flex: none; }
+
+.card.review.pending { --hud: var(--gold); }
+.review-actions { display: grid; grid-template-columns: 1fr; gap: 0.75rem; }
+@media (min-width: 24rem) { .review-actions { grid-template-columns: 1fr 1fr; } }
+.review-actions button.approve {
+  background: linear-gradient(135deg, #2bbf2b, var(--lime));
+  color: #08130a;
+  text-shadow: none;
+  box-shadow: 0 5px 0 #1d6b12, inset 0 2px 0 rgb(255 255 255 / 0.35);
+}
+.review-actions button.approve:active { box-shadow: 0 1px 0 #1d6b12; }
+.review-actions button.redo-button { background: var(--legendary); box-shadow: 0 5px 0 #a34600, inset 0 2px 0 rgb(255 255 255 / 0.3); }
+.review-actions button.redo-button:active { box-shadow: 0 1px 0 #a34600; }
+
+.card.waiting { --hud: var(--gold); text-align: center; }
+.card.waiting h2 { justify-content: center; }
+.card.waiting .verdict { text-align: left; }
+.waiting-icon { font-size: 2.75rem; line-height: 1; }
+.card.redo { --hud: var(--orange); }
+
+.card.comments { --hud: var(--purple); }
+ol.comment-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.6rem; }
+ol.comment-list li {
+  padding: 0.55rem 0.7rem;
+  border-left: 3px solid var(--cyan);
+  background: rgb(0 0 0 / 0.25);
+  border-radius: 0 0.25rem 0.25rem 0;
+}
+ol.comment-list li.mine { border-left-color: var(--magenta); }
+.comment-meta { display: flex; justify-content: space-between; gap: 0.5rem; font-size: 0.8rem; color: var(--muted); }
+.comment-meta strong { color: var(--text); font-family: var(--chunky); font-weight: 400; letter-spacing: 0.03em; }
+.comment-body { overflow-wrap: anywhere; white-space: pre-wrap; }
+.comment-form { display: flex; flex-direction: column; gap: 0.5rem; }

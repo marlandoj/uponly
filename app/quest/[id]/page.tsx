@@ -1,29 +1,58 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { isVideoPath } from "@/lib/evidence";
 import { isPhotoOnlyPath } from "@/lib/progressCheck";
 import { getQuestRun, type QuestRun } from "@/lib/questRuns";
 import { getRunRewards } from "@/lib/rewardsData";
-import { abandonQuest, deleteQuestPhotos } from "../actions";
+import { getRunComments, signRunEvidence } from "@/lib/reviewData";
+import { createClient } from "@/lib/supabase/server";
+import { abandonQuest, deleteQuestPhotos, submitReview } from "../actions";
 import Celebration from "./Celebration";
+import Comments from "./Comments";
+import Evidence from "./Evidence";
 import QuestRunner from "./QuestRunner";
 import RewardDrop from "./RewardDrop";
 
 // The full-screen reward drop plays on the first view after earning.
 const FRESH_DROP_MS = 10 * 60 * 1000;
 
+// Signed evidence URLs expire after 5 minutes; never serve this page from cache.
+export const dynamic = "force-dynamic";
+
 export default async function QuestRunPage({
   params,
   searchParams,
 }: {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ error?: string }>;
+  searchParams: Promise<{ error?: string; approved?: string; redo?: string }>;
 }) {
   const { id } = await params;
-  const run = await getQuestRun(id);
-  if (!run) notFound();
-  const { error } = await searchParams;
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  // RLS returns the caller's own runs and their circle-mates' runs only.
+  const run = user ? await getQuestRun(id) : null;
+  if (!user || !run) notFound();
+  const query = await searchParams;
+  const comments = await getRunComments(run.id);
+
+  return (
+    <>
+      {run.user_id === user.id ? <OwnerView run={run} error={query.error} /> : <GiverView run={run} query={query} />}
+      {run.status !== "draft" && <Comments runId={run.id} viewerId={user.id} comments={comments} />}
+      <Link href="/" className="muted center">Back to circle</Link>
+    </>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// The player's own run
+// ---------------------------------------------------------------------------
+async function OwnerView({ run, error }: { run: QuestRun; error?: string }) {
   const open = run.status === "draft" || run.status === "active";
-  const earned = run.status === "completed" ? await getRunRewards(run.id) : null;
+  const approved = run.status === "completed" && run.approval_status === "approved";
+  const earned = approved ? await getRunRewards(run.id) : null;
   const freshDrop =
     !!earned?.latestEarnedAt && Date.now() - Date.parse(earned.latestEarnedAt) < FRESH_DROP_MS;
 
@@ -33,6 +62,7 @@ export default async function QuestRunPage({
       <p className="muted">
         Finish condition: <strong>{run.finish_condition}</strong>
       </p>
+      <ModeChip run={run} />
       {error && <p className="error">{error}</p>}
 
       {open ? (
@@ -41,15 +71,24 @@ export default async function QuestRunPage({
           status={run.status as "draft" | "active"}
           startedAt={run.started_at}
           serverNow={Date.now()}
+          redo={run.status === "active" && run.approval_status === "rejected"}
         />
-      ) : run.status === "completed" ? (
+      ) : run.status === "completed" && !approved ? (
+        <section className="card waiting">
+          <p className="waiting-icon" aria-hidden="true">⏳</p>
+          <h2>Waiting for review</h2>
+          <p>{waitingReason(run)}</p>
+          <ProgressCheck run={run} />
+          <p className="muted">Loot drops the moment a circle-mate approves. Check back soon.</p>
+        </section>
+      ) : approved ? (
         <>
           {earned && <RewardDrop rewards={earned.rewards} fresh={freshDrop} />}
           <section className="card">
             <h2>Quest complete 🎉</h2>
             <p>
-              Nice work. Your before and after photos stay private — circle-mates only see them
-              through your celebration code.
+              Nice work. Your before and after evidence stays private to your circle — circle-mates
+              see it on this page or through your celebration code.
             </p>
             <ProgressCheck run={run} />
           </section>
@@ -57,11 +96,11 @@ export default async function QuestRunPage({
           <form action={deleteQuestPhotos}>
             <input type="hidden" name="id" value={run.id} />
             <button type="submit" className="secondary">
-              Delete my evidence photos
+              Delete my evidence
             </button>
           </form>
           <p className="muted">
-            Photos stay private to your circle and can be deleted anytime. Ratings already given stay.
+            Evidence stays private to your circle and can be deleted anytime. Ratings already given stay.
           </p>
           <Link href="/quest" className="button">Start another quest</Link>
         </>
@@ -78,14 +117,97 @@ export default async function QuestRunPage({
           <button type="submit" className="secondary">Set this quest aside</button>
         </form>
       )}
-      <Link href="/" className="muted center">Back to circle</Link>
     </>
   );
 }
 
+function waitingReason(run: QuestRun): string {
+  if (run.approval_mode === "giver_approves") return "You picked “I approve each finish” — a circle-mate reviews your before and after.";
+  if (isVideoPath(run.after_path) || isVideoPath(run.before_path)) return "Clips always get a human look — a circle-mate will review it.";
+  return "The AI couldn't confirm the finish, so a circle-mate will make the call.";
+}
+
+// ---------------------------------------------------------------------------
+// A circle-mate's run: review it (giver), or follow along
+// ---------------------------------------------------------------------------
+async function GiverView({ run, query }: { run: QuestRun; query: { error?: string; approved?: string; redo?: string } }) {
+  const supabase = await createClient();
+  const { data: player } = await supabase
+    .from("profiles")
+    .select("display_name")
+    .eq("id", run.user_id)
+    .maybeSingle<{ display_name: string }>();
+  const name = player?.display_name ?? "A circle-mate";
+  const completed = run.status === "completed";
+  const pending = completed && run.approval_status === "pending";
+  const approved = completed && run.approval_status === "approved";
+  // getQuestRun read this run through RLS — that's the circle membership check.
+  const evidence = completed ? await signRunEvidence(run) : null;
+  const earned = approved ? await getRunRewards(run.id) : null;
+
+  return (
+    <>
+      <h1>{run.title}</h1>
+      <p className="muted">
+        <strong>{name}</strong> · finish condition: <strong>{run.finish_condition}</strong>
+      </p>
+      <ModeChip run={run} />
+      {query.error && <p className="error">{query.error}</p>}
+
+      {completed && evidence ? (
+        <section className={`card review ${pending ? "pending" : ""}`}>
+          <h2>{pending ? "Review the finish" : "Before & after"}</h2>
+          <div className="photos">
+            <Evidence label="Before" src={evidence.before} path={run.before_path} />
+            <Evidence label="After" src={evidence.after} path={run.after_path} />
+          </div>
+          <ProgressCheck run={run} giver />
+          {pending && (
+            <form action={submitReview} className="review-actions">
+              <input type="hidden" name="id" value={run.id} />
+              <button type="submit" name="decision" value="approve" className="approve">
+                ✅ Approve
+              </button>
+              <button type="submit" name="decision" value="redo" className="redo-button">
+                🔁 Ask to redo
+              </button>
+            </form>
+          )}
+          {approved && <p className="notice">✅ Approved — loot dropped for {name}.</p>}
+        </section>
+      ) : run.status === "active" && run.approval_status === "rejected" ? (
+        <section className="card">
+          <h2>🔁 Redo requested</h2>
+          <p>{query.redo ? "Sent back. " : ""}{name} will take another after photo or clip. You&apos;ll review it here.</p>
+        </section>
+      ) : run.status === "abandoned" ? (
+        <section className="card">
+          <p>{name} set this quest aside.</p>
+        </section>
+      ) : (
+        <section className="card">
+          <h2>In progress ⏱️</h2>
+          <p>{name} is on it. Their before and after show up here when they finish.</p>
+        </section>
+      )}
+
+      {earned && <RewardDrop rewards={earned.rewards} fresh={query.approved === "drop"} />}
+    </>
+  );
+}
+
+function ModeChip({ run }: { run: QuestRun }) {
+  return (
+    <p className={`mode-chip ${run.approval_mode}`}>
+      {run.approval_mode === "giver_approves" ? "👀 Giver approves" : "⚡ AI instant drop"}
+    </p>
+  );
+}
+
 // Positive framing for every outcome: the check never undoes a completion.
-function ProgressCheck({ run }: { run: QuestRun }) {
+function ProgressCheck({ run, giver = false }: { run: QuestRun; giver?: boolean }) {
   const v = run.verification;
+  const clip = v === null && (isVideoPath(run.after_path) || isVideoPath(run.before_path));
   const title =
     v === "pass"
       ? "✅ AI check: looks done!"
@@ -93,10 +215,12 @@ function ProgressCheck({ run }: { run: QuestRun }) {
         ? "📸 AI check couldn't spot the finish — still counts"
         : v === "unclear"
           ? "📸 AI check wasn't sure — photo-only"
-          : "📸 Photo-only";
+          : clip
+            ? "🎥 Clip — no AI check, human eyes only"
+            : "📸 Photo-only";
   const detail =
     run.verification_reason ??
-    (isPhotoOnlyPath(v) ? "Your circle-mate will judge from the photos." : null);
+    (isPhotoOnlyPath(v) ? (giver ? "You're the judge — check the before and after." : "Your circle-mate will judge from the photos.") : null);
   return (
     <div className={`verdict ${v === "pass" ? "pass" : "photo"}`}>
       <strong>{title}</strong>
