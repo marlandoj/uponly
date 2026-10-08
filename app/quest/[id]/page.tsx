@@ -155,8 +155,8 @@ async function GiverView({ run, query }: { run: QuestRun; query: { error?: strin
   // getQuestRun read this run through RLS — that's the circle membership check.
   const evidence = completed ? await signRunEvidence(run) : null;
   const earned = approved ? await getRunRewards(run.id) : null;
-  // Only parents review; approve_run enforces it, this just hides the buttons.
-  const isParent = pending && (await getMyHouseholdRole()) === "parent";
+  // Only GameMasters review; approve_run enforces it, this just hides the buttons.
+  const isGameMaster = pending && (await getMyHouseholdRole()) === "gamemaster";
 
   return (
     <>
@@ -181,8 +181,8 @@ async function GiverView({ run, query }: { run: QuestRun; query: { error?: strin
             <Evidence label="After" src={evidence.after} path={run.after_path} />
           </div>
           <ProgressCheck run={run} giver />
-          {pending && !isParent && <p className="notice">⏳ Waiting on a parent to review this one.</p>}
-          {pending && isParent && (
+          {pending && !isGameMaster && <p className="notice">⏳ Waiting on the GameMaster to review this one.</p>}
+          {pending && isGameMaster && (
             <div className="review-actions">
               <form action={submitReview}>
                 <input type="hidden" name="id" value={run.id} />

@@ -10,7 +10,7 @@ import { createReward } from "./actions";
 
 /**
  * One-tap game credit packs (any quest earns them) plus a custom amount.
- * Each tap is a create_reward call; the kid gets a (mock) gift card, never an
+ * Each tap is a create_reward call; the gamer gets a (mock) gift card, never an
  * in-game purchase.
  */
 export default function GameLootTemplates({ from }: { from: "/rewards/new" | "/rewards/shop" }) {

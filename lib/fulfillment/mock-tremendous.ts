@@ -9,7 +9,7 @@
 //     "reward": {
 //       "value": { "denomination": 10.00, "currency_code": "USD" },
 //       "delivery": { "method": "LINK" },
-//       "recipient": { "name": "<kid display name>" },
+//       "recipient": { "name": "<gamer display name>" },
 //       "products": ["<DOORDASH_GIFT_CARD_PRODUCT_ID>"]
 //     }
 //   }

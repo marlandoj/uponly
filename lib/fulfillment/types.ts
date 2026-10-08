@@ -11,7 +11,7 @@ export type RewardInfo = {
   id: string;
   name: string;
   description: string;
-  /** null = parent didn't set a value (e.g. a home-cooked treat). */
+  /** null = GameMaster didn't set a value (e.g. a home-cooked treat). */
   valueCents: number | null;
   fulfillment: FulfillmentKind;
 };
@@ -26,7 +26,7 @@ export type FulfillmentResult = {
   /** Stored as reward_earnings.fulfillment_ref (gift code, order id, …). */
   ref: string;
   etaMinutes?: number;
-  /** Short, kid-facing status line. */
+  /** Short, gamer-facing status line. */
   displayText: string;
 };
 

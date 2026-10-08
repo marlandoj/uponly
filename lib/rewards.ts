@@ -51,7 +51,7 @@ export type RewardEarning = {
   fulfillment_ref: string | null;
 };
 
-/** What the kid's reward drop shows for one earning. */
+/** What the gamer's reward drop shows for one earning. */
 export type EarnedReward = {
   earningId: string;
   rewardId: string;
@@ -87,7 +87,7 @@ export function eligibleRewards<R extends Pick<Reward, "circle_id" | "quest_key"
   return rewards.filter((r) => r.circle_id === run.circle_id && isRewardForQuest(r, run.quest_key));
 }
 
-/** Auto providers fulfill on earn; manual waits for a parent. */
+/** Auto providers fulfill on earn; manual waits for the GameMaster. */
 export function isAutoFulfilled(kind: FulfillmentKind, registry: ProviderRegistry = PROVIDERS): boolean {
   return getProvider(kind, registry) !== null;
 }
@@ -104,7 +104,7 @@ export function fulfillEarning<E extends Pick<RewardEarning, "status" | "fulfill
   return { ...earning, status: "fulfilled", fulfilled_at: now.toISOString(), fulfillment_ref: clean };
 }
 
-/** Kid-facing line for an earning, rebuildable from what's stored. */
+/** Gamer-facing line for an earning, rebuildable from what's stored. */
 export function describeEarning(
   kind: FulfillmentKind,
   status: EarningStatus,
@@ -112,12 +112,12 @@ export function describeEarning(
 ): { displayText: string; etaMinutes: number | null } {
   if (status !== "fulfilled" || !ref) {
     return kind === "manual"
-      ? { displayText: "Your parent will fulfill this", etaMinutes: null }
-      : { displayText: "Unlocking… your parent can fulfill this", etaMinutes: null };
+      ? { displayText: "Your GameMaster will fulfill this", etaMinutes: null }
+      : { displayText: "Unlocking… your GameMaster can fulfill this", etaMinutes: null };
   }
   if (kind === "mock-tremendous") return { displayText: `Gift code ${ref} (mock)`, etaMinutes: null };
   if (kind === "mock-doordash") return { displayText: "Order confirmed", etaMinutes: mockEtaMinutes(ref) };
-  return { displayText: "Fulfilled by your parent", etaMinutes: null };
+  return { displayText: "Fulfilled by your GameMaster", etaMinutes: null };
 }
 
 /** "$12.50" → 1250. Empty → null. Anything else invalid → undefined. */
@@ -142,7 +142,7 @@ export type RewardInput = {
 };
 
 /**
- * Validates the parent's "new reward" form; quest must be in the catalog.
+ * Validates the GameMaster's "new reward" form; quest must be in the catalog.
  * kind defaults to food; a game credit must name its game.
  */
 export function parseRewardForm(form: {
@@ -270,7 +270,7 @@ export async function earnRewardsForRun(
         eta = result.etaMinutes ?? null;
         text = result.displayText;
       } catch (e) {
-        // Stays 'earned'; it shows up in the parent's queue to fulfill by hand.
+        // Stays 'earned'; it shows up in the GameMaster's queue to fulfill by hand.
         console.warn(`earnRewardsForRun: fulfillment failed for earning ${earning.id}:`, e);
       }
     }

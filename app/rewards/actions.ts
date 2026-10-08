@@ -40,7 +40,7 @@ export async function createReward(formData: FormData) {
   redirect("/rewards");
 }
 
-/** Parent hands the reward over in real life and marks it done. */
+/** The GameMaster hands the reward over in real life and marks it done. */
 export async function markFulfilled(formData: FormData) {
   const id = String(formData.get("id") ?? "");
   const supabase = await createClient();

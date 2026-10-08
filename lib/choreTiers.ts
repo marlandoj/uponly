@@ -1,5 +1,5 @@
-// Chore value tiers (quest_runs.chore_size, 0011). A kid tags a quest as a
-// quick, standard or big chore; the parent's loot picker sorts game loot by how
+// Chore value tiers (quest_runs.chore_size, 0011). A gamer tags a quest as a
+// quick, standard or big chore; the GameMaster's loot picker sorts game loot by how
 // close it is to that tier's suggested reward value. Labels only — nothing is
 // charged or paid out from these numbers.
 

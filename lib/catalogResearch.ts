@@ -3,9 +3,9 @@ import { getFortniteShop, type ShopItem } from "@/lib/fortniteShop";
 import { vbucksToCents } from "@/lib/gameRewards";
 import type { Game } from "@/lib/rewards";
 
-// Loot catalog research (game_catalog, 0011). When a kid saves the games they
+// Loot catalog research (game_catalog, 0011). When a gamer saves the games they
 // play, we cache what loot for those games costs: today's Fortnite shop (the
-// existing fortnite-api.com fetch) plus curated currency packs. The parent's
+// existing fortnite-api.com fetch) plus curated currency packs. The GameMaster's
 // loot picker reads it back. DISPLAY ONLY — nothing is bought; a picked item
 // becomes an ordinary game_credit reward fulfilled as a (mock) gift card.
 

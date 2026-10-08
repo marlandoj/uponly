@@ -1,7 +1,7 @@
 // Today's Fortnite item shop, read from the community fortnite-api.com mirror
-// (GET https://fortnite-api.com/v2/shop, no key). DISPLAY ONLY: parents browse
+// (GET https://fortnite-api.com/v2/shop, no key). DISPLAY ONLY: GameMasters browse
 // it to name a chore reward after an item. Nothing here (or anywhere) buys an
-// item — Epic has no purchasing API — the kid gets a gift card for V-Bucks.
+// item — Epic has no purchasing API — the gamer gets a gift card for V-Bucks.
 //
 // Response shape (as of 2026-10): { status, data: { date, vbuckIcon, entries[] } }
 // where each entry has offerId, regularPrice / finalPrice (V-Bucks), an optional

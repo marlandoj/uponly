@@ -5,26 +5,26 @@ import RolePicker from "./RolePicker";
 
 // No DOM test libs: render the picker to HTML the way the create and join forms
 // would, then read the radio inputs out of the markup.
-const render = (defaultRole: "parent" | "kid") => renderToStaticMarkup(createElement(RolePicker, { defaultRole }));
+const render = (defaultRole: "gamemaster" | "gamer") => renderToStaticMarkup(createElement(RolePicker, { defaultRole }));
 const inputs = (html: string) => html.match(/<input[^>]*>/g) ?? [];
 const roleInputs = (html: string, value: string) =>
   inputs(html).filter((i) => i.includes('name="householdRole"') && i.includes(`value="${value}"`));
 
 describe.each([
-  ["create form", "parent"],
-  ["join form", "kid"],
+  ["create form", "gamemaster"],
+  ["join form", "gamer"],
 ] as const)("RolePicker in the %s (defaultRole=%s)", (_, defaultRole) => {
   const html = render(defaultRole);
-  const other = defaultRole === "parent" ? "kid" : "parent";
+  const other = defaultRole === "gamemaster" ? "gamer" : "gamemaster";
 
   it("renders both options", () => {
-    expect(html).toContain("I&#x27;M A PARENT");
-    expect(html).toContain("I&#x27;M A KID");
+    expect(html).toContain("I&#x27;M A GAMEMASTER");
+    expect(html).toContain("I&#x27;M A GAMER");
   });
 
   it("has exactly one householdRole radio per value", () => {
     expect(inputs(html).filter((i) => i.includes('name="householdRole"'))).toHaveLength(2);
-    for (const v of ["parent", "kid"]) {
+    for (const v of ["gamemaster", "gamer"]) {
       const [input, ...rest] = roleInputs(html, v);
       expect(rest).toHaveLength(0);
       expect(input).toContain('type="radio"');

@@ -51,10 +51,10 @@ describe("approveRun: structured rejection", () => {
     expect((await approveRun(RUN, false, "Wrong spot")).error).toBe("tell them what to fix (1–300 characters)");
   });
 
-  it("a kid's approval is refused by the RPC's parent check", async () => {
+  it("a gamer's approval is refused by the RPC's GameMaster check", async () => {
     rpc.mockReturnValue({
-      single: async () => ({ data: null, error: { code: "42501", message: "only a parent can approve a quest" } }),
+      single: async () => ({ data: null, error: { code: "42501", message: "only a GameMaster can approve a quest" } }),
     });
-    expect(await approveRun(RUN, true)).toEqual({ error: "only a parent can approve a quest", rewards: [] });
+    expect(await approveRun(RUN, true)).toEqual({ error: "only a GameMaster can approve a quest", rewards: [] });
   });
 });

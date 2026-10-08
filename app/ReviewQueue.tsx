@@ -11,16 +11,16 @@ const timeFmt = new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric
 export default function ReviewQueue({
   queue,
   players,
-  isParent,
+  isGameMaster,
 }: {
   queue: QueuedRun[];
   players: Map<string, Player>;
-  isParent: boolean;
+  isGameMaster: boolean;
 }) {
   return (
     <section className="card review-queue">
       <h2>Waiting for review</h2>
-      {!isParent && <p className="muted">⏳ Waiting on a parent&apos;s review</p>}
+      {!isGameMaster && <p className="muted">⏳ Waiting on the GameMaster</p>}
       <ul className="queue-list">
         {queue.map(({ run, evidence }) => {
           const player = players.get(run.user_id);

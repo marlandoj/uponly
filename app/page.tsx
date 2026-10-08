@@ -33,7 +33,7 @@ export default async function Home() {
   } = await supabase.auth.getUser();
   const myMembership = members.find((m) => m.profiles?.id === user?.id);
   const me = myMembership?.profiles;
-  const isParent = myMembership?.household_role === "parent";
+  const isGameMaster = myMembership?.household_role === "gamemaster";
   const queue = me ? await getReviewQueue(me.id, circle.id) : [];
   const players = new Map(members.flatMap((m) => (m.profiles ? [[m.profiles.id, m.profiles] as const] : [])));
 
@@ -45,7 +45,7 @@ export default async function Home() {
           {me.gamer_tag ? <>🎮 Loot bound for: <strong>{me.gamer_tag}</strong></> : "🎮 Set your gamer tag"}
         </Link>
       )}
-      {queue.length > 0 && <ReviewQueue queue={queue} players={players} isParent={isParent} />}
+      {queue.length > 0 && <ReviewQueue queue={queue} players={players} isGameMaster={isGameMaster} />}
 
       <Link href="/quest" className="button">Start a quest</Link>
       <Link href="/r" className="button secondary">Celebrate a circle-mate&apos;s quest</Link>

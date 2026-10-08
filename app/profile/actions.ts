@@ -20,7 +20,7 @@ export async function saveGamerProfile(formData: FormData) {
     p_games: parsed.value.games,
   });
   if (error) redirect(`/profile?error=${encodeURIComponent(error.message)}`);
-  // Best-effort: cache loot prices for the parent's picker (never blocks the save).
+  // Best-effort: cache loot prices for the GameMaster's picker (never blocks the save).
   try {
     await researchCatalogForGames(supabase, parsed.value.games);
   } catch (e) {

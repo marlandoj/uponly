@@ -4,13 +4,13 @@ import { useState } from "react";
 import type { HouseholdRole } from "@/lib/householdRole";
 
 const OPTIONS: { value: HouseholdRole; icon: string; label: string; hint: string }[] = [
-  { value: "parent", icon: "🛡️", label: "I'M A PARENT", hint: "Approve quests, control loot" },
-  { value: "kid", icon: "🎮", label: "I'M A KID", hint: "Do chores, earn loot" },
+  { value: "gamemaster", icon: "🛡️", label: "I'M A GAMEMASTER", hint: "Run the game — approve quests, control loot" },
+  { value: "gamer", icon: "🎮", label: "I'M A GAMER", hint: "Play — do chores, earn loot" },
 ];
 
 /**
- * Parent / kid picker for the create and join forms. Real radio inputs (visually
- * hidden, still keyboard-focusable) so the form posts householdRole=parent|kid.
+ * GameMaster / gamer picker for the create and join forms. Real radio inputs (visually
+ * hidden, still keyboard-focusable) so the form posts householdRole=gamemaster|gamer.
  * create_circle / join_circle validate it again.
  */
 export default function RolePicker({ defaultRole }: { defaultRole: HouseholdRole }) {
