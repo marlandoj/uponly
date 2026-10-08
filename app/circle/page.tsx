@@ -22,7 +22,7 @@ export default async function CirclePage({
         <h2>Start a circle</h2>
         <label>
           Circle name
-          <input name="name" maxLength={40} placeholder="The Laundry Crew" required />
+          <input name="name" maxLength={40} placeholder="The Loot Squad" required />
         </label>
         <button type="submit">Create circle</button>
       </form>
