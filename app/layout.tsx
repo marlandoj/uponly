@@ -10,7 +10,7 @@ const pixel = Press_Start_2P({ weight: "400", subsets: ["latin"], display: "swap
 
 export const metadata: Metadata = {
   title: "ChoreQuest",
-  description: "Real chores. Epic loot. The chore game where your level only ever rises.",
+  description: "Real-life chores, epic in-game loot. The chore game where your level only ever rises.",
   appleWebApp: { capable: true, title: "ChoreQuest", statusBarStyle: "default" },
   icons: { apple: "/icons/apple-touch-icon.png" },
 };
@@ -38,7 +38,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               Chore<b>Quest</b>
             </span>
           </Link>
-          <span className="tagline">Real chores. Epic loot.</span>
+          <span className="tagline">Real-life chores, EPIC in-game loot.</span>
         </header>
         <main className="shell">{children}</main>
       </body>

@@ -32,7 +32,7 @@ function DropIn() {
   return (
     <>
       <h1>Drop in</h1>
-      <p className="muted">ChoreQuest: real chores, epic loot. Your level only goes up.</p>
+      <p className="muted">ChoreQuest: real-life chores, epic in-game loot. Your level only goes up.</p>
       <div className="card">
         <p className="muted">No account, no email, no waiting — jump straight in as a guest.</p>
         <button type="button" onClick={dropIn} disabled={busy} className="dropin-hero">

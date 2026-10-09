@@ -3,9 +3,9 @@ import type { MetadataRoute } from "next";
 // Manifest + icons + theme only. Deliberately no service worker / offline mode.
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "ChoreQuest — real chores, epic loot",
+    name: "ChoreQuest — real-life chores, epic in-game loot",
     short_name: "ChoreQuest",
-    description: "Real chores. Epic loot. Turn a chore into a quest — your level only ever goes up.",
+    description: "Real-life chores, epic in-game loot. Turn a chore into a quest — your level only ever goes up.",
     start_url: "/",
     scope: "/",
     display: "standalone",
