@@ -6,6 +6,7 @@ import { MIN_QUEST_SECONDS, QUESTS } from "@/lib/quests";
 import { formatCents } from "@/lib/rewards";
 import { startQuest } from "./actions";
 import BackButton from "@/app/BackButton";
+import QuestStartForm from "./QuestStartForm";
 
 export default async function QuestPickerPage({
   searchParams,
@@ -26,7 +27,7 @@ export default async function QuestPickerPage({
       </p>
       {error && <p className="error">{error}</p>}
 
-      <form action={startQuest} className="quest-list">
+      <QuestStartForm action={startQuest} className="quest-list">
         <fieldset className="card">
           <legend>Chore size</legend>
           {CHORE_SIZES.map((s) => (
@@ -67,7 +68,7 @@ export default async function QuestPickerPage({
           </label>
         </fieldset>
         <button type="submit" className="sticky">Start quest</button>
-      </form>
+      </QuestStartForm>
     </>
   );
 }

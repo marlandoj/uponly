@@ -11,6 +11,7 @@ import { getRunComments, signRunEvidence } from "@/lib/reviewData";
 import { createClient } from "@/lib/supabase/server";
 import { abandonQuest, deleteQuestPhotos, submitReview } from "../actions";
 import Celebration from "./Celebration";
+import CelebrationFx from "./CelebrationFx";
 import Comments from "./Comments";
 import Evidence from "./Evidence";
 import QuestRunner from "./QuestRunner";
@@ -94,6 +95,7 @@ async function OwnerView({ run, error }: { run: QuestRun; error?: string }) {
         </section>
       ) : approved ? (
         <>
+          <CelebrationFx runId={run.id} />
           {earned && <RewardDrop rewards={earned.rewards} fresh={freshDrop} />}
           <section className="card">
             <h2>Quest complete 🎉</h2>
