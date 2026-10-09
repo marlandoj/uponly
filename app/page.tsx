@@ -2,9 +2,12 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getMyCircle } from "@/lib/circle";
 import { joinInviteUrl } from "@/lib/joinInvite";
+import { levelLabel, playerName } from "@/lib/playerName";
 import { qrDataUrl } from "@/lib/qr";
+import { getOpenQuestRun } from "@/lib/questRuns";
 import { getReviewQueue } from "@/lib/reviewData";
 import { createClient } from "@/lib/supabase/server";
+import ActiveQuestCard from "./ActiveQuestCard";
 import { BossBar } from "./Celebrate";
 import ReviewQueue from "./ReviewQueue";
 import { signOut } from "./login/actions";
@@ -35,6 +38,7 @@ export default async function Home() {
   const me = myMembership?.profiles;
   const isGameMaster = myMembership?.household_role === "gamemaster";
   const queue = me ? await getReviewQueue(me.id, circle.id) : [];
+  const openRun = await getOpenQuestRun();
   const players = new Map(members.flatMap((m) => (m.profiles ? [[m.profiles.id, m.profiles] as const] : [])));
 
   return (
@@ -45,6 +49,7 @@ export default async function Home() {
           {me.gamer_tag ? <>🎮 Loot bound for: <strong>{me.gamer_tag}</strong></> : "🎮 Set your gamer tag"}
         </Link>
       )}
+      {openRun && <ActiveQuestCard run={openRun} />}
       {queue.length > 0 && <ReviewQueue queue={queue} players={players} isGameMaster={isGameMaster} />}
 
       <Link href="/quest" className="button">Start a quest</Link>
@@ -73,10 +78,10 @@ export default async function Home() {
           {members.map((m) => (
             <li key={m.profiles?.id}>
               <span>
-                {m.profiles?.display_name}
+                {m.profiles && playerName(m.profiles)}
                 {m.role === "owner" && <span className="muted"> · owner</span>}
               </span>
-              <span>{Number(m.profiles?.level ?? 3.5).toFixed(2)}</span>
+              <span title="Chore level">{levelLabel(m.profiles?.level)}</span>
             </li>
           ))}
         </ul>

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { getMyCircle } from "@/lib/circle";
+import { getMyCircle, getMyHouseholdRole } from "@/lib/circle";
 import { FULFILLMENT_LABELS } from "@/lib/fulfillment";
 import { resolveLootSprite } from "@/lib/lootSprites";
 import { formatCents, questLabel, type Reward } from "@/lib/rewards";
@@ -9,13 +9,13 @@ import { getCircleRewards } from "@/lib/rewardsData";
 export default async function RewardsPage() {
   const circle = await getMyCircle();
   if (!circle) redirect("/circle");
-  const rewards = await getCircleRewards(circle.id);
+  const [rewards, role] = await Promise.all([getCircleRewards(circle.id), getMyHouseholdRole()]);
 
   return (
     <>
       <h1>Rewards &amp; loot</h1>
       <p className="muted">Finish the quest, the reward drops instantly.</p>
-      <Link href="/rewards/new" className="button">Add a reward</Link>
+      {role === "gamemaster" && <Link href="/rewards/new" className="button">Add a reward</Link>}
       <Link href="/rewards/shop" className="button secondary">Browse Fortnite shop</Link>
       <Link href="/rewards/queue" className="button secondary">Fulfillment queue</Link>
 

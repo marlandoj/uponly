@@ -9,7 +9,7 @@ type GamerProfile = { gamer_tag: string | null; games: string[] };
 export default async function ProfilePage({
   searchParams,
 }: {
-  searchParams: Promise<{ error?: string }>;
+  searchParams: Promise<{ error?: string; saved?: string }>;
 }) {
   const supabase = await createClient();
   const {
@@ -22,13 +22,14 @@ export default async function ProfilePage({
     .eq("id", user.id)
     .maybeSingle<GamerProfile>();
   if (readError) throw readError;
-  const { error } = await searchParams;
+  const { error, saved } = await searchParams;
 
   return (
     <>
       <h1>Gamer profile</h1>
       <p className="muted">Tell your household where your loot should go. Just a label — nothing is looked up or linked.</p>
       {error && <p className="error">{error}</p>}
+      {saved && !error && <p className="notice saved-banner" role="status">Saved ✓</p>}
       <form action={saveGamerProfile} className="card">
         <label>
           Gamer tag

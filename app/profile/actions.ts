@@ -27,5 +27,5 @@ export async function saveGamerProfile(formData: FormData) {
     console.warn("saveGamerProfile: catalog research failed:", e);
   }
   revalidatePath("/");
-  redirect("/");
+  redirect("/profile?saved=1");
 }
