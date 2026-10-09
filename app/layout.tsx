@@ -28,15 +28,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <header className="brand-bar">
           <Link href="/" className="wordmark" aria-label="ChoreQuest home">
-            <span className="logo-blocks" aria-hidden="true">
-              <i />
-              <i />
-              <i />
-              <i />
-            </span>
-            <span>
-              Chore<b>Quest</b>
-            </span>
+            {/* eslint-disable-next-line @next/next/no-img-element -- static brand logo */}
+            <img src="/img/logo.webp" alt="ChoreQuest" width={240} height={80} className="brand-logo" />
           </Link>
           <span className="tagline">Real-life chores, EPIC in-game loot.</span>
         </header>

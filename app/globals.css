@@ -79,6 +79,11 @@ a { color: var(--cyan); }
   color: transparent;
   text-shadow: none;
 }
+.brand-logo {
+  display: block;
+  width: 11rem;
+  height: auto;
+}
 .logo-blocks { display: grid; grid-template-columns: repeat(2, 0.7rem); gap: 2px; transform: rotate(-8deg); }
 .logo-blocks i { width: 0.7rem; height: 0.7rem; box-shadow: inset -2px -2px 0 rgb(0 0 0 / 0.35); }
 .logo-blocks i:nth-child(1) { background: var(--purple); }
