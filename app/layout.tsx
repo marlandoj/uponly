@@ -16,6 +16,16 @@ export const metadata: Metadata = {
   description: "Real-life chores, epic in-game loot. The chore game where your level only ever rises.",
   appleWebApp: { capable: true, title: "ChoreQuest", statusBarStyle: "default" },
   icons: { apple: "/icons/apple-touch-icon.png" },
+  openGraph: {
+    title: "ChoreQuest",
+    description: "Real-life chores, EPIC in-game loot. Do the chore, earn the drop.",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "ChoreQuest",
+    description: "Real-life chores, EPIC in-game loot. Do the chore, earn the drop.",
+  },
 };
 
 export const viewport: Viewport = {
