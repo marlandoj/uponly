@@ -5,6 +5,7 @@ import { getOpenQuestRun } from "@/lib/questRuns";
 import { MIN_QUEST_SECONDS, QUESTS } from "@/lib/quests";
 import { formatCents } from "@/lib/rewards";
 import { startQuest } from "./actions";
+import BackButton from "@/app/BackButton";
 
 export default async function QuestPickerPage({
   searchParams,
@@ -18,7 +19,7 @@ export default async function QuestPickerPage({
 
   return (
     <>
-      <h1>Pick a quest</h1>
+      <BackButton />      <h1>Pick a quest</h1>
       <p className="muted">
         Choose a chore and how you&apos;ll know it&apos;s done. Snap a before photo, give it at
         least {MIN_QUEST_SECONDS / 60} minutes, then snap the after.

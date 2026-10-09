@@ -4,6 +4,7 @@ import { getMyCircle, getMyHouseholdRole } from "@/lib/circle";
 import { FULFILLMENT_LABELS } from "@/lib/fulfillment";
 import { getFulfillmentQueue } from "@/lib/rewardsData";
 import { markFulfilled } from "../actions";
+import BackButton from "@/app/BackButton";
 
 const when = (iso: string) =>
   new Date(iso).toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit", timeZone: "UTC" }) + " UTC";
@@ -22,7 +23,7 @@ export default async function QueuePage({
 
   return (
     <>
-      <h1>Fulfillment queue</h1>
+      <BackButton fallback="/rewards" />      <h1>Fulfillment queue</h1>
       {error && <p className="error">{error}</p>}
       {!isGameMaster && <p className="notice">🛡️ GameMasters only — the GameMaster marks loot as handed over.</p>}
       <section className="card">
@@ -57,7 +58,6 @@ export default async function QueuePage({
           </ul>
         )}
       </section>
-      <Link href="/rewards" className="muted center">Back to rewards</Link>
     </>
   );
 }

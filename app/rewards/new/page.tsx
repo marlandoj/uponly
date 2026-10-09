@@ -8,6 +8,7 @@ import { GAMES, isGame } from "@/lib/rewards";
 import { createReward } from "../actions";
 import GameLootTemplates from "../GameLootTemplates";
 import LootPicker from "./LootPicker";
+import BackButton from "@/app/BackButton";
 
 export default async function NewRewardPage({
   searchParams,
@@ -25,9 +26,8 @@ export default async function NewRewardPage({
   if ((await getMyHouseholdRole()) !== "gamemaster") {
     return (
       <>
-        <h1>New reward</h1>
+      <BackButton fallback="/rewards" />        <h1>New reward</h1>
         <p className="notice">🛡️ GameMasters only — ask the GameMaster to add loot for your quests.</p>
-        <Link href="/rewards" className="muted center">Back to rewards</Link>
       </>
     );
   }
@@ -96,7 +96,6 @@ export default async function NewRewardPage({
         <p className="muted">Mock providers look real but never charge or order anything.</p>
         <button type="submit">Create reward</button>
       </form>
-      <Link href="/rewards" className="muted center">Back to rewards</Link>
     </>
   );
 }

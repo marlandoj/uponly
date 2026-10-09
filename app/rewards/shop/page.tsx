@@ -5,6 +5,7 @@ import { getFortniteShop } from "@/lib/fortniteShop";
 import { shopItemToRewardInput } from "@/lib/gameRewards";
 import { createReward } from "../actions";
 import GameLootTemplates, { RewardFields } from "../GameLootTemplates";
+import BackButton from "@/app/BackButton";
 
 // DISPLAY ONLY. GameMasters browse today's Fortnite shop and turn an item into a
 // chore reward; the gamer earns a (mock) gift card worth its V-Bucks. There is
@@ -21,7 +22,7 @@ export default async function FortniteShopPage({
 
   return (
     <>
-      <h1>Fortnite shop</h1>
+      <BackButton fallback="/rewards" />      <h1>Fortnite shop</h1>
       <p className="muted">
         Pick something from today&apos;s shop and link it to a chore. Finishing a quest drops a gift card for the
         V-Bucks — we never buy anything in the game.
@@ -57,7 +58,6 @@ export default async function FortniteShopPage({
       )}
 
       <p className="muted center">Shop data from fortnite-api.com, refreshed hourly. Not affiliated with Epic Games.</p>
-      <Link href="/rewards" className="muted center">Back to rewards</Link>
     </>
   );
 }

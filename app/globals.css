@@ -235,6 +235,14 @@ button.secondary:active, a.button.secondary:active {
   background: linear-gradient(90deg, var(--orange) 0 4px, #232c25 4px);
 }
 button:disabled { opacity: 0.45; cursor: not-allowed; transform: none; filter: grayscale(0.6); }
+/* Back button: compact, top-left, consistent across pages */
+.back-button {
+  align-self: flex-start;
+  min-height: 2.25rem;
+  font-size: 0.85rem;
+  padding: 0.4rem 0.9rem;
+  margin-bottom: 0.75rem;
+}
 /* Hero drop-in: full-width arcade entrance, mobile-first tap target */
 button.dropin-hero { width: 100%; min-height: 4.5rem; font-size: 1.5rem; margin-top: 0.75rem; }
 

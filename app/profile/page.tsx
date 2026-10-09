@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { PROFILE_GAMES } from "@/lib/gamerProfile";
 import { createClient } from "@/lib/supabase/server";
 import { saveGamerProfile } from "./actions";
+import BackButton from "@/app/BackButton";
 
 type GamerProfile = { gamer_tag: string | null; games: string[] };
 
@@ -32,7 +33,7 @@ export default async function ProfilePage({
 
   return (
     <>
-      <h1>{isGameMaster ? "GameMaster profile" : "Gamer profile"}</h1>
+      <BackButton />      <h1>{isGameMaster ? "GameMaster profile" : "Gamer profile"}</h1>
       <p className="muted">
         {isGameMaster
           ? "Your name, as your squad sees it."
@@ -65,7 +66,6 @@ export default async function ProfilePage({
         )}
         <button type="submit">Save</button>
       </form>
-      <Link href="/" className="muted center">Back to squad</Link>
     </>
   );
 }

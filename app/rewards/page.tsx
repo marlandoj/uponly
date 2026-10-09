@@ -5,6 +5,7 @@ import { FULFILLMENT_LABELS } from "@/lib/fulfillment";
 import { resolveLootSprite } from "@/lib/lootSprites";
 import { formatCents, questLabel, type Reward } from "@/lib/rewards";
 import { getCircleRewards } from "@/lib/rewardsData";
+import BackButton from "@/app/BackButton";
 
 export default async function RewardsPage() {
   const circle = await getMyCircle();
@@ -13,7 +14,7 @@ export default async function RewardsPage() {
 
   return (
     <>
-      <h1>Rewards &amp; loot</h1>
+      <BackButton />      <h1>Rewards &amp; loot</h1>
       <p className="muted">Finish the quest, the reward drops instantly.</p>
       {role === "gamemaster" && <Link href="/rewards/new" className="button">Add a reward</Link>}
       <Link href="/rewards/shop" className="button secondary">Browse Fortnite shop</Link>
@@ -48,7 +49,6 @@ export default async function RewardsPage() {
         Demo mode: Tremendous and DoorDash fulfillment is mocked — no charges, no real orders. Game loot is a gift
         card; nothing is bought in-game.
       </p>
-      <Link href="/" className="muted center">Back to squad</Link>
     </>
   );
 }

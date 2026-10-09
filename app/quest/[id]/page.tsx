@@ -16,6 +16,7 @@ import Evidence from "./Evidence";
 import QuestRunner from "./QuestRunner";
 import RejectForm from "./RejectForm";
 import RewardDrop from "./RewardDrop";
+import BackButton from "@/app/BackButton";
 
 // The full-screen reward drop plays on the first view after earning.
 const FRESH_DROP_MS = 10 * 60 * 1000;
@@ -43,9 +44,8 @@ export default async function QuestRunPage({
 
   return (
     <>
-      {run.user_id === user.id ? <OwnerView run={run} error={query.error} /> : <GiverView run={run} query={query} />}
+      <BackButton />      {run.user_id === user.id ? <OwnerView run={run} error={query.error} /> : <GiverView run={run} query={query} />}
       {run.status !== "draft" && <Comments runId={run.id} viewerId={user.id} comments={comments} />}
-      <Link href="/" className="muted center">Back to squad</Link>
     </>
   );
 }

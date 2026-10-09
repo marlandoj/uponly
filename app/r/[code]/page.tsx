@@ -7,6 +7,7 @@ import { getCelebration, signCelebrationPhotos } from "@/lib/celebrationData";
 import { isRating } from "@/lib/rating";
 import Evidence from "@/app/quest/[id]/Evidence";
 import { rateQuest } from "../actions";
+import BackButton from "@/app/BackButton";
 
 // Signed photo URLs expire after 5 minutes; never serve this page from cache.
 export const dynamic = "force-dynamic";
@@ -26,7 +27,7 @@ export default async function RatePage({
   if (!c) {
     return (
       <>
-        <h1>Quest not found</h1>
+      <BackButton />        <h1>Quest not found</h1>
         <section className="card">
           <p>
             No finished quest with code <strong>{code}</strong> in your squad. Celebrations are
@@ -34,7 +35,6 @@ export default async function RatePage({
           </p>
           <Link href="/r" className="button">Try another code</Link>
         </section>
-        <Link href="/" className="muted center">Back to squad</Link>
       </>
     );
   }
@@ -64,7 +64,6 @@ export default async function RatePage({
 
       <Verdict c={c} code={code} />
 
-      <Link href="/" className="muted center">Back to squad</Link>
     </>
   );
 }

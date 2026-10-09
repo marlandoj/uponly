@@ -4,6 +4,7 @@ import { bossState } from "@/lib/boss";
 import { getMyCircle } from "@/lib/circle";
 import { playerName } from "@/lib/playerName";
 import { createClient } from "@/lib/supabase/server";
+import BackButton from "@/app/BackButton";
 
 type Row = {
   id: string;
@@ -46,7 +47,7 @@ export default async function Leaderboard() {
 
   return (
     <>
-      <h1>Leaderboard</h1>
+      <BackButton />      <h1>Leaderboard</h1>
       <p className="muted">{circle.name} · ranked by level, then streak, then quests</p>
 
       <section className="card">
@@ -85,7 +86,6 @@ export default async function Leaderboard() {
         Streaks count consecutive days with a completed quest. Levels only ever
         go up — ratings never subtract.
       </p>
-      <Link href="/" className="button secondary">Back home</Link>
     </>
   );
 }
