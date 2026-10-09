@@ -54,6 +54,15 @@ describe("pixel-sprite", () => {
     expect(css.split("{").length).toBe(css.split("}").length);
   });
 
+  it("ships the four new crew members with distinct two-frame maps", () => {
+    for (const name of ["battlehero", "elf", "ghost", "racer"] as const) {
+      const { palette, frames } = SPRITES[name];
+      expect(frames).toHaveLength(2);
+      for (const rows of frames) expect(() => toBoxShadow(rows, palette)).not.toThrow();
+      expect(css).toContain(`@keyframes cc-frames-${name} {`);
+    }
+  });
+
   it("rejects ragged rows and unknown palette keys", () => {
     const blank = Array.from({ length: HEIGHT }, () => ".".repeat(WIDTH));
     expect(() => toBoxShadow([...blank.slice(1), "..."], {})).toThrow(/wide/);
