@@ -1,6 +1,6 @@
 import { headers } from "next/headers";
 
-/** Relative path of the QR join-link for a normalized circle code. */
+/** Relative path of the QR join-link for a normalized squad code. */
 export function joinInvitePath(code: string): string {
   return `/circle/join?code=${code}`;
 }

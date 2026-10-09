@@ -4,7 +4,7 @@ import { submitComment } from "../actions";
 
 const timeFmt = new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
 
-/** Squad chat on a run: oldest first, visible to the player and their circle. */
+/** Squad chat on a run: oldest first, visible to the player and their squad. */
 export default function Comments({
   runId,
   viewerId,
@@ -24,7 +24,7 @@ export default function Comments({
           {comments.map((c) => (
             <li key={c.id} className={c.author_id === viewerId ? "mine" : ""}>
               <p className="comment-meta">
-                <strong>{c.author_id === viewerId ? "You" : (c.author?.display_name ?? "A circle-mate")}</strong>
+                <strong>{c.author_id === viewerId ? "You" : (c.author?.display_name ?? "A squadmate")}</strong>
                 <time dateTime={c.created_at}>{timeFmt.format(new Date(c.created_at))}</time>
               </p>
               <p className="comment-body">{c.body}</p>

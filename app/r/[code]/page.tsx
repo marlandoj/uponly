@@ -29,17 +29,17 @@ export default async function RatePage({
         <h1>Quest not found</h1>
         <section className="card">
           <p>
-            No finished quest with code <strong>{code}</strong> in your circle. Celebrations are
-            only visible to members of the same circle.
+            No finished quest with code <strong>{code}</strong> in your squad. Celebrations are
+            only visible to members of the same squad.
           </p>
           <Link href="/r" className="button">Try another code</Link>
         </section>
-        <Link href="/" className="muted center">Back to circle</Link>
+        <Link href="/" className="muted center">Back to squad</Link>
       </>
     );
   }
 
-  // get_celebration only returned a row because we're in this circle.
+  // get_celebration only returned a row because we're in this squad.
   const photos = await signCelebrationPhotos(c);
 
   return (
@@ -64,7 +64,7 @@ export default async function RatePage({
 
       <Verdict c={c} code={code} />
 
-      <Link href="/" className="muted center">Back to circle</Link>
+      <Link href="/" className="muted center">Back to squad</Link>
     </>
   );
 }
@@ -74,7 +74,7 @@ function Verdict({ c, code }: { c: Celebration; code: string }) {
     case "self":
       return (
         <section className="card">
-          <p>This is your quest! Share its code with your circle so they can celebrate it.</p>
+          <p>This is your quest! Share its code with your squad so they can celebrate it.</p>
           <Link href={`/quest/${c.run_id}`} className="button">Show share code</Link>
         </section>
       );
@@ -82,7 +82,7 @@ function Verdict({ c, code }: { c: Celebration; code: string }) {
       return (
         <section className="card">
           <p>
-            Welcome to the circle! To keep things fair, you can celebrate quests that start at
+            Welcome to the squad! To keep things fair, you can celebrate quests that start at
             least 24 hours after you joined — from{" "}
             <strong>{new Date(c.can_rate_from).toUTCString().slice(0, 22)} UTC</strong>.
           </p>

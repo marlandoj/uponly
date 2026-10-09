@@ -46,7 +46,7 @@ export const QUEST_RUN_COLUMNS =
   "approval_mode, approval_status, approved_by, approved_at, rejection_reason, attempt_no, chore_size";
 
 /**
- * A run the caller can see, or null: their own, or a circle-mate's (RLS, 0009).
+ * A run the caller can see, or null: their own, or a squadmate's (RLS, 0009).
  * Check `user_id` before treating it as the caller's.
  */
 export async function getQuestRun(id: string): Promise<QuestRun | null> {
@@ -68,7 +68,7 @@ export async function getOpenQuestRun(): Promise<QuestRun | null> {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) return null;
-  // Circle-mates' runs are readable too, so filter to the caller explicitly.
+  // Squadmates' runs are readable too, so filter to the caller explicitly.
   const { data, error } = await supabase
     .from("quest_runs")
     .select(QUEST_RUN_COLUMNS)

@@ -40,7 +40,7 @@ export function canReviewRun(viewerId: string, isCircleMember: boolean, run: Rev
   return { ok: true };
 }
 
-/** The giver's review queue: circle-mates' finishes waiting on a review, newest first. */
+/** The giver's review queue: squadmates' finishes waiting on a review, newest first. */
 export function reviewQueue<R extends ReviewableRun & { completed_at: string | null }>(
   viewerId: string,
   isCircleMember: boolean,

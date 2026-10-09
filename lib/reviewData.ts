@@ -5,7 +5,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 
 // Page reads for the run page's review + comments (0009_visual_verification.sql)
-// and the circle home's review queue (0010_review_queue.sql).
+// and the squad home's review queue (0010_review_queue.sql).
 
 export type RunComment = {
   id: string;
@@ -57,7 +57,7 @@ const QUEUE_LIMIT = 20;
 export type QueuedRun = { run: QuestRun; evidence: RunEvidence };
 
 /**
- * Circle-mates' finishes waiting for the viewer's review, newest first, with
+ * Squadmates' finishes waiting for the viewer's review, newest first, with
  * signed thumbnails. RLS (0009 "circle read") limits the read to the viewer's
  * circle — the membership check signRunEvidence relies on. Empty for anyone
  * whose only pending run is their own.

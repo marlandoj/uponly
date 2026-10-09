@@ -48,7 +48,7 @@ export default async function Home() {
       {queue.length > 0 && <ReviewQueue queue={queue} players={players} isGameMaster={isGameMaster} />}
 
       <Link href="/quest" className="button">Start a quest</Link>
-      <Link href="/r" className="button secondary">Celebrate a circle-mate&apos;s quest</Link>
+      <Link href="/r" className="button secondary">Celebrate a squadmate&apos;s quest</Link>
       <Link href="/leaderboard" className="button secondary">Leaderboard</Link>
       <Link href="/rewards" className="button secondary">Rewards &amp; loot</Link>
 
@@ -61,7 +61,7 @@ export default async function Home() {
       )}
 
       <section className="card share">
-        <h2>Invite to your circle</h2>
+        <h2>Invite to your squad</h2>
         <InviteQr code={circle.join_code} name={circle.name} />
         <p className="code">{circle.join_code}</p>
         <p className="muted">Scan the QR code or share this code so housemates can join and celebrate your quests.</p>

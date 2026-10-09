@@ -35,7 +35,7 @@ export default async function QuestRunPage({
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  // RLS returns the caller's own runs and their circle-mates' runs only.
+  // RLS returns the caller's own runs and their squadmates' runs only.
   const run = user ? await getQuestRun(id) : null;
   if (!user || !run) notFound();
   const query = await searchParams;
@@ -45,7 +45,7 @@ export default async function QuestRunPage({
     <>
       {run.user_id === user.id ? <OwnerView run={run} error={query.error} /> : <GiverView run={run} query={query} />}
       {run.status !== "draft" && <Comments runId={run.id} viewerId={user.id} comments={comments} />}
-      <Link href="/" className="muted center">Back to circle</Link>
+      <Link href="/" className="muted center">Back to squad</Link>
     </>
   );
 }
@@ -90,7 +90,7 @@ async function OwnerView({ run, error }: { run: QuestRun; error?: string }) {
           <h2>Waiting for review</h2>
           <p>{waitingReason(run)}</p>
           <ProgressCheck run={run} />
-          <p className="muted">Loot drops the moment a circle-mate approves. Check back soon.</p>
+          <p className="muted">Loot drops the moment a squadmate approves. Check back soon.</p>
         </section>
       ) : approved ? (
         <>
@@ -98,7 +98,7 @@ async function OwnerView({ run, error }: { run: QuestRun; error?: string }) {
           <section className="card">
             <h2>Quest complete 🎉</h2>
             <p>
-              Nice work. Your before and after evidence stays private to your circle — circle-mates
+              Nice work. Your before and after evidence stays private to your squad — squadmates
               see it on this page or through your celebration code.
             </p>
             <ProgressCheck run={run} />
@@ -111,7 +111,7 @@ async function OwnerView({ run, error }: { run: QuestRun; error?: string }) {
             </button>
           </form>
           <p className="muted">
-            Evidence stays private to your circle and can be deleted anytime. Ratings already given stay.
+            Evidence stays private to your squad and can be deleted anytime. Ratings already given stay.
           </p>
           <Link href="/quest" className="button">Start another quest</Link>
         </>
@@ -133,13 +133,13 @@ async function OwnerView({ run, error }: { run: QuestRun; error?: string }) {
 }
 
 function waitingReason(run: QuestRun): string {
-  if (run.approval_mode === "giver_approves") return "You picked “I approve each finish” — a circle-mate reviews your before and after.";
-  if (isVideoPath(run.after_path) || isVideoPath(run.before_path)) return "Clips always get a human look — a circle-mate will review it.";
-  return "The AI couldn't confirm the finish, so a circle-mate will make the call.";
+  if (run.approval_mode === "giver_approves") return "You picked “I approve each finish” — a squadmate reviews your before and after.";
+  if (isVideoPath(run.after_path) || isVideoPath(run.before_path)) return "Clips always get a human look — a squadmate will review it.";
+  return "The AI couldn't confirm the finish, so a squadmate will make the call.";
 }
 
 // ---------------------------------------------------------------------------
-// A circle-mate's run: review it (giver), or follow along
+// A squadmate's run: review it (giver), or follow along
 // ---------------------------------------------------------------------------
 async function GiverView({ run, query }: { run: QuestRun; query: { error?: string; approved?: string; redo?: string } }) {
   const supabase = await createClient();
@@ -148,7 +148,7 @@ async function GiverView({ run, query }: { run: QuestRun; query: { error?: strin
     .select("display_name")
     .eq("id", run.user_id)
     .maybeSingle<{ display_name: string }>();
-  const name = player?.display_name ?? "A circle-mate";
+  const name = player?.display_name ?? "A squadmate";
   const completed = run.status === "completed";
   const pending = completed && run.approval_status === "pending";
   const approved = completed && run.approval_status === "approved";
@@ -245,7 +245,7 @@ function ProgressCheck({ run, giver = false }: { run: QuestRun; giver?: boolean 
             : "📸 Photo-only";
   const detail =
     run.verification_reason ??
-    (isPhotoOnlyPath(v) ? (giver ? "You're the judge — check the before and after." : "Your circle-mate will judge from the photos.") : null);
+    (isPhotoOnlyPath(v) ? (giver ? "You're the judge — check the before and after." : "Your squadmate will judge from the photos.") : null);
   return (
     <div className={`verdict ${v === "pass" ? "pass" : "photo"}`}>
       <strong>{title}</strong>

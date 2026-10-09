@@ -54,14 +54,14 @@ export default async function QuestPickerPage({
             <input type="radio" name="approvalMode" value="ai_instant" defaultChecked />
             <span>
               <strong>⚡ AI instant drop</strong>
-              <span className="muted"> — an AI pass on your photos drops loot right away; anything else goes to your circle.</span>
+              <span className="muted"> — an AI pass on your photos drops loot right away; anything else goes to your squad.</span>
             </span>
           </label>
           <label className="choice">
             <input type="radio" name="approvalMode" value="giver_approves" />
             <span>
               <strong>👀 I approve each finish</strong>
-              <span className="muted"> — a circle-mate reviews the before/after and approves or asks for a redo.</span>
+              <span className="muted"> — a squadmate reviews the before/after and approves or asks for a redo.</span>
             </span>
           </label>
         </fieldset>

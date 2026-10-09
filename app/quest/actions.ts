@@ -68,7 +68,7 @@ export async function deleteQuestPhotos(formData: FormData) {
 const isRunId = (id: string) => /^[0-9a-f-]{36}$/i.test(id);
 const runPage = (id: string, query = "") => `/quest/${encodeURIComponent(id)}${query}`;
 
-/** Circle-mate or owner comments on a run (RLS: circle members, as themselves). */
+/** Squadmate or owner comments on a run (RLS: circle members, as themselves). */
 export async function postComment(runId: string, body: unknown): Promise<{ error: string | null }> {
   const parsed = parseCommentBody(body);
   if (!parsed.ok) return { error: parsed.error };
@@ -94,7 +94,7 @@ export async function submitComment(formData: FormData) {
  * A giver approves a finished run (rewards drop for its player) or asks for a
  * redo with a required note (what to fix, 1–300 chars — approve_run re-checks
  * it). approve_run enforces who may review; on approval the earn flow runs
- * with the giver's session (record_reward_earning allows circle-mates once a
+ * with the giver's session (record_reward_earning allows squadmates once a
  * run is approved) and never fails the approval.
  */
 export async function approveRun(
