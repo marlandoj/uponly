@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Black_Ops_One, Press_Start_2P, Russo_One } from "next/font/google";
 import Link from "next/link";
+import ChoreCrew from "./ChoreCrew";
 import "./globals.css";
 
 // Display: stencil (tactical) · UI: chunky block sans · Accents: pixel
@@ -26,6 +27,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={`${stencil.variable} ${chunky.variable} ${pixel.variable}`}>
       <body>
+        <ChoreCrew />
         <header className="brand-bar">
           <Link href="/" className="wordmark" aria-label="ChoreQuest home">
             {/* eslint-disable-next-line @next/next/no-img-element -- static brand logo */}
