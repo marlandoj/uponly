@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { isVideoPath } from "@/lib/evidence";
+import { playerName } from "@/lib/playerName";
 import type { QuestRun } from "@/lib/questRuns";
 import type { QueuedRun } from "@/lib/reviewData";
 
@@ -34,8 +35,7 @@ export default function ReviewQueue({
                 <span className="queue-info">
                   <strong className="queue-title">{run.title}</strong>
                   <span className="queue-player">
-                    {player?.display_name ?? "A squadmate"}
-                    {player?.gamer_tag && <span className="queue-tag"> · 🎮 {player.gamer_tag}</span>}
+                    {player ? playerName(player) : "A squadmate"}
                   </span>
                   <span className="queue-meta">
                     <VerdictBadge run={run} />

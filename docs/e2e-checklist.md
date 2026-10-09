@@ -1,10 +1,10 @@
 # Two-phone E2E checklist
 
-Run through with two phones (A = quest doer, B = circle-mate), both on the
+Run through with two phones (A = quest doer, B = squad-mate), both on the
 deployed URL. Mark each step pass/fail.
 
 ## Setup
-- [ ] A creates a circle, notes the 6-char join code
+- [ ] A creates a squad, notes the 6-char join code
 - [ ] B joins via the code; both see each other on the roster
 
 ## Quest flow (A)
@@ -19,7 +19,7 @@ deployed URL. Mark each step pass/fail.
 - [ ] B rates 5 — A's level ticks up, "First Fold badge unlocked! (simulated)" shows
 - [ ] A cannot rate their own quest (no self-rating)
 - [ ] A second rating from B on the same quest is rejected (one per quest)
-- [ ] A third circle-mate's rating is recorded but not counted (max 2)
+- [ ] A third squad-mate's rating is recorded but not counted (max 2)
 
 ## Anti-abuse (B, fresh account)
 - [ ] B (joined < 24h ago) cannot rate — "24 hours after you joined" message

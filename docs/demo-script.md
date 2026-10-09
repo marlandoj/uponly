@@ -6,7 +6,7 @@ Shoot on two phones; screen-record both.
 ## Shot list
 
 1. **Hook (0:00–0:15)** — "Chores are invisible work. ChoreQuest makes them legendary."
-   Show the home screen: circle name, boss battle bar, members roster.
+   Show the home screen: squad name, boss battle bar, members roster.
 
 2. **The mundane task (0:15–0:45)** — Phone A: start a real quest
    (e.g. "Clean the kitchen sink"), take the before photo with the camera.

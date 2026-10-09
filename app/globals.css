@@ -836,3 +836,24 @@ ol.comment-list li.mine { border-left-color: var(--magenta); }
 .comment-meta strong { color: var(--text); font-family: var(--chunky); font-weight: 400; letter-spacing: 0.03em; }
 .comment-body { overflow-wrap: anywhere; white-space: pre-wrap; }
 .comment-form { display: flex; flex-direction: column; gap: 0.5rem; }
+
+/* Home: the caller's open quest, front and centre */
+.card.active-quest {
+  --hud: var(--lime);
+  border-color: var(--lime);
+  box-shadow: 0 6px 0 rgb(0 0 0 / 0.45), 0 0 16px rgb(125 255 42 / 0.25);
+}
+.card.active-quest strong { font-family: var(--chunky); font-size: 1.1rem; overflow-wrap: anywhere; }
+
+/* Profile: save confirmation */
+.saved-banner {
+  align-self: flex-start;
+  font-family: var(--chunky);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  border: 2px solid var(--lime);
+  border-radius: 0.5rem;
+  padding: 0.4rem 0.8rem;
+  background: rgb(125 255 42 / 0.12);
+  box-shadow: 0 3px 0 #000;
+}

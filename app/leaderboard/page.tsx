@@ -2,11 +2,13 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { bossState } from "@/lib/boss";
 import { getMyCircle } from "@/lib/circle";
+import { playerName } from "@/lib/playerName";
 import { createClient } from "@/lib/supabase/server";
 
 type Row = {
   id: string;
   display_name: string;
+  gamer_tag: string | null;
   level: number;
   xp: number;
   streak: number;
@@ -25,7 +27,7 @@ export default async function Leaderboard() {
   const supabase = await createClient();
   const { data: members, error } = await supabase
     .from("circle_members")
-    .select("profiles(id, display_name, level, xp, streak, quests_completed)")
+    .select("profiles(id, display_name, gamer_tag, level, xp, streak, quests_completed)")
     .eq("circle_id", circle.id)
     .overrideTypes<{ profiles: Row | null }[], { merge: false }>();
   if (error) throw error;
@@ -58,7 +60,7 @@ export default async function Leaderboard() {
                 <li key={p.id}>
                   <span className="rank">{medals[i] ?? `${i + 1}.`}</span>
                   <span className="who">
-                    <strong>{p.display_name}</strong>
+                    <strong>{playerName(p)}</strong>
                     <span className="muted">
                       {" "}
                       · 👾 {boss.name} ({boss.defeated} defeated)
