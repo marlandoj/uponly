@@ -1,7 +1,6 @@
 import { redirect } from "next/navigation";
 import { getMyCircle } from "@/lib/circle";
 import { createCircle, joinCircle } from "./actions";
-import RolePicker from "./RolePicker";
 
 export default async function CirclePage({
   searchParams,
@@ -21,16 +20,17 @@ export default async function CirclePage({
 
       <form action={createCircle} className="card">
         <h2>Start a squad</h2>
+        <p className="muted">🛡️ Creating a squad makes you its GameMaster — you approve quests and control the loot.</p>
         <label>
           Squad name
           <input name="name" maxLength={40} placeholder="The Loot Squad" required />
         </label>
-        <RolePicker defaultRole="gamemaster" />
         <button type="submit">Create squad</button>
       </form>
 
       <form action={joinCircle} className="card">
         <h2>Join a squad</h2>
+        <p className="muted">🎮 Joining a squad makes you a gamer — do chores, earn loot.</p>
         <label>
           6-character code
           <input
@@ -42,7 +42,6 @@ export default async function CirclePage({
             required
           />
         </label>
-        <RolePicker defaultRole="gamer" />
         <button type="submit">Join squad</button>
       </form>
     </>
