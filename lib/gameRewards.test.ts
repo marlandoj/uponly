@@ -61,7 +61,7 @@ describe("game credit templates", () => {
       const r = templateToRewardInput(t);
       expect(isFulfillmentKind(r.fulfillment)).toBe(true);
       const parsed = parseRewardForm({ ...r, value: centsToDollarInput(r.valueCents), questKey: "" });
-      expect(parsed).toEqual({ ok: true, value: { ...r, questKey: null } });
+      expect(parsed).toEqual({ ok: true, value: { ...r, questKey: null, imageUrl: null } });
     }
   });
 });

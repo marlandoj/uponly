@@ -57,8 +57,15 @@ function LootCard({ reward: r }: { reward: Reward }) {
   const sprite = resolveLootSprite(r);
   return (
     <li className="loot-card">
-      {/* eslint-disable-next-line @next/next/no-img-element -- static pixel sprite */}
-      {sprite && <img src={sprite} alt="" width={56} height={56} className="pixel" />}
+      {r.image_url ? (
+        // eslint-disable-next-line @next/next/no-img-element -- remote shop art, display only
+        <img src={r.image_url} alt="" width={128} height={128} loading="lazy" className="shop-art" />
+      ) : (
+        <>
+          {/* eslint-disable-next-line @next/next/no-img-element -- static pixel sprite */}
+          {sprite && <img src={sprite} alt="" width={56} height={56} className="pixel" />}
+        </>
+      )}
       <div>
         <span className="loot-badge">GAME LOOT</span>
         <strong>

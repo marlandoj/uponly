@@ -682,6 +682,12 @@ ul.loot-grid {
   background: radial-gradient(circle at 50% 40%, #3d7bff, #5a1fc4 60%, #2a0d66);
   border-radius: 0.3rem;
 }
+/* Rewards page: same art treatment in the card's flex-row layout (img stays 128px). */
+.loot-card img.shop-art {
+  object-fit: contain;
+  background: radial-gradient(circle at 50% 40%, #3d7bff, #5a1fc4 60%, #2a0d66);
+  border-radius: 0.3rem;
+}
 .vbucks { font-family: var(--chunky); color: var(--cyan); }
 img.loot-sprite { width: 10rem; height: 10rem; filter: drop-shadow(0 0 22px rgb(255 216 77 / 0.65)); background: none; box-shadow: none; }
 img.inline-sprite { width: 1.75rem; height: 1.75rem; vertical-align: middle; margin-right: 0.4rem; }

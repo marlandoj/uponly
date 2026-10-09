@@ -55,6 +55,7 @@ export default async function LootPicker({ games, size, tag }: { games: Game[]; 
                         fulfillment: "mock-tremendous",
                         kind: "game_credit",
                         game: row.game,
+                        imageUrl: image,
                       }}
                     />
                     {image && (

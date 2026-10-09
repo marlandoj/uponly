@@ -21,6 +21,7 @@ export async function createReward(formData: FormData) {
     questKey: formData.get("quest"),
     kind: formData.get("kind"),
     game: formData.get("game"),
+    imageUrl: formData.get("imageUrl"),
   });
   if (!parsed.ok) redirect(`${back}?error=${encodeURIComponent(parsed.error)}`);
 
@@ -34,6 +35,7 @@ export async function createReward(formData: FormData) {
     p_quest_key: r.questKey,
     p_game: r.game,
     p_kind: r.kind,
+    p_image_url: r.imageUrl,
   });
   if (error) redirect(`${back}?error=${encodeURIComponent(error.message)}`);
   revalidatePath("/rewards");
