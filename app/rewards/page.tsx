@@ -48,7 +48,7 @@ export default async function RewardsPage() {
         Demo mode: Tremendous and DoorDash fulfillment is mocked — no charges, no real orders. Game loot is a gift
         card; nothing is bought in-game.
       </p>
-      <Link href="/" className="muted center">Back to circle</Link>
+      <Link href="/" className="muted center">Back to squad</Link>
     </>
   );
 }

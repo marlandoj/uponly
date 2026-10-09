@@ -37,7 +37,7 @@ export default async function QueuePage({
                   {e.reward?.name} <span className={`pill ${e.status}`}>{e.status}</span>
                 </strong>
                 <span className="muted">
-                  {e.gamer?.display_name ?? "A circle-mate"} · earned {when(e.earned_at)}
+                  {e.gamer?.display_name ?? "A squadmate"} · earned {when(e.earned_at)}
                 </span>
                 {e.reward && (
                   <span className="muted">

@@ -13,24 +13,24 @@ export default async function CirclePage({
 
   return (
     <>
-      <h1>Your circle</h1>
+      <h1>Your squad</h1>
       <p className="muted">
-        ChoreQuest is played with your household. Start a circle or join one with its code.
+        ChoreQuest is played with your household. Start a squad or join one with its code.
       </p>
       {error && <p className="error">{error}</p>}
 
       <form action={createCircle} className="card">
-        <h2>Start a circle</h2>
+        <h2>Start a squad</h2>
         <label>
-          Circle name
+          Squad name
           <input name="name" maxLength={40} placeholder="The Loot Squad" required />
         </label>
         <RolePicker defaultRole="gamemaster" />
-        <button type="submit">Create circle</button>
+        <button type="submit">Create squad</button>
       </form>
 
       <form action={joinCircle} className="card">
-        <h2>Join a circle</h2>
+        <h2>Join a squad</h2>
         <label>
           6-character code
           <input
@@ -43,7 +43,7 @@ export default async function CirclePage({
           />
         </label>
         <RolePicker defaultRole="gamer" />
-        <button type="submit">Join circle</button>
+        <button type="submit">Join squad</button>
       </form>
     </>
   );

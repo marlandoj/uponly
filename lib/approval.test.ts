@@ -48,7 +48,7 @@ describe("canReviewRun (mirrors approve_run)", () => {
   const GIVER = "22222222-2222-2222-2222-222222222222";
   const pending: ReviewableRun = { user_id: PLAYER, status: "completed", approval_status: "pending" };
 
-  it("a circle-mate can review a pending finish", () => {
+  it("a squadmate can review a pending finish", () => {
     expect(canReviewRun(GIVER, true, pending)).toEqual({ ok: true });
   });
 
@@ -109,7 +109,7 @@ describe("reviewQueue (home page 'Waiting for review')", () => {
     ...over,
   });
 
-  it("a pending finish shows up for a circle-mate giver", () => {
+  it("a pending finish shows up for a squadmate giver", () => {
     expect(reviewQueue(GIVER, true, [run("a")]).map((r) => r.id)).toEqual(["a"]);
   });
 

@@ -17,7 +17,7 @@ function readHouseholdRole(formData: FormData, fallback: "gamemaster" | "gamer")
 
 export async function createCircle(formData: FormData) {
   const name = String(formData.get("name") ?? "").trim();
-  if (name.length < 1 || name.length > 40) fail("Circle name must be 1–40 characters");
+  if (name.length < 1 || name.length > 40) fail("Squad name must be 1–40 characters");
   const householdRole = readHouseholdRole(formData, "gamemaster");
 
   const supabase = await createClient();
@@ -28,11 +28,11 @@ export async function createCircle(formData: FormData) {
 
 export async function joinCircle(formData: FormData) {
   const code = normalizeJoinCode(String(formData.get("code") ?? ""));
-  if (!code) fail("That doesn't look like a 6-character circle code");
+  if (!code) fail("That doesn't look like a 6-character squad code");
   const householdRole = readHouseholdRole(formData, "gamer");
 
   const supabase = await createClient();
   const { error } = await supabase.rpc("join_circle", { p_code: code, p_household_role: householdRole });
-  if (error) fail(error.code === "P0002" ? "No circle with that code" : error.message);
+  if (error) fail(error.code === "P0002" ? "No squad with that code" : error.message);
   redirect("/");
 }

@@ -50,7 +50,7 @@ export async function getRunRewards(runId: string): Promise<{ rewards: EarnedRew
   return { rewards, latestEarnedAt: data.at(-1)?.earned_at ?? null };
 }
 
-/** All rewards in the caller's circle, newest first. */
+/** All rewards in the caller's squad, newest first. */
 export async function getCircleRewards(circleId: string): Promise<(Reward & { created_at: string })[]> {
   const supabase = await createClient();
   const { data, error } = await supabase
@@ -65,7 +65,7 @@ export async function getCircleRewards(circleId: string): Promise<(Reward & { cr
 
 export type QueueEntry = EarningRow & { gamer: { display_name: string } | null };
 
-/** Every earning in the circle (unfulfilled first, then newest). */
+/** Every earning in the squad (unfulfilled first, then newest). */
 export async function getFulfillmentQueue(circleId: string): Promise<QueueEntry[]> {
   const supabase = await createClient();
   const { data, error } = await supabase

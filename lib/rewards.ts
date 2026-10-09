@@ -79,7 +79,7 @@ export function isRewardForQuest(reward: Pick<Reward, "quest_key">, questKey: st
   return reward.quest_key === null || reward.quest_key === questKey;
 }
 
-/** Rewards a completed run earns: same circle, matching (or any-quest) key. */
+/** Rewards a completed run earns: same squad, matching (or any-quest) key. */
 export function eligibleRewards<R extends Pick<Reward, "circle_id" | "quest_key">>(
   rewards: R[],
   run: Pick<RunForRewards, "circle_id" | "quest_key">,

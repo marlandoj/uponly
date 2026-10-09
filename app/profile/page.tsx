@@ -52,7 +52,7 @@ export default async function ProfilePage({
         </fieldset>
         <button type="submit">Save</button>
       </form>
-      <Link href="/" className="muted center">Back to circle</Link>
+      <Link href="/" className="muted center">Back to squad</Link>
     </>
   );
 }

@@ -5,7 +5,7 @@ import type { Rating } from "@/lib/rating";
 // Celebration codes use the circle join-code alphabet (no 0/O/1/I/L).
 export const normalizeRatingCode = normalizeJoinCode;
 
-/** Lifetime of a signed evidence-photo URL handed to a circle-mate. */
+/** Lifetime of a signed evidence-photo URL handed to a squadmate. */
 export const PHOTO_URL_TTL_SECONDS = 5 * 60;
 
 export const RATING_LABELS: Record<Rating, { label: string; emoji: string }> = {

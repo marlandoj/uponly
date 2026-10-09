@@ -27,7 +27,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
   if (!user) return err(401, "Sign in first");
 
   const run = await getQuestRun(id);
-  // Circle-mates can read the run, but only its player uploads evidence.
+  // Squadmates can read the run, but only its player uploads evidence.
   if (!run || run.user_id !== user.id) return err(404, "Quest not found");
 
   let form: FormData;

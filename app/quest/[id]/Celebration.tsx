@@ -58,9 +58,9 @@ export default async function Celebration({ run }: { run: QuestRun }) {
         <ShareCard code={run.rating_code} />
       ) : run.credited ? (
         <form action={shareQuest} className="card">
-          <h2>Celebrate with your circle</h2>
+          <h2>Celebrate with your squad</h2>
           <p className="muted">
-            Get a QR code, link and 6-character code. Circle-mates see your before and after photos
+            Get a QR code, link and 6-character code. Squadmates see your before and after photos
             and rate it Done, Great or Legendary.
           </p>
           <input type="hidden" name="id" value={run.id} />
@@ -75,7 +75,7 @@ export default async function Celebration({ run }: { run: QuestRun }) {
             {ratings.map((r) => (
               <li key={r.id}>
                 <span>
-                  {r.rater?.display_name ?? "A circle-mate"}:{" "}
+                  {r.rater?.display_name ?? "A squadmate"}:{" "}
                   {isRating(r.rating) && `${RATING_LABELS[r.rating].emoji} ${RATING_LABELS[r.rating].label}`}
                 </span>
                 {r.counted && <LevelTick label="Level" from={r.level_before} to={r.level_after} />}
@@ -99,13 +99,13 @@ async function ShareCard({ code }: { code: string }) {
   const qr = await qrDataUrl(url);
   return (
     <section className="card share">
-      <h2>Celebrate with your circle</h2>
+      <h2>Celebrate with your squad</h2>
       {/* eslint-disable-next-line @next/next/no-img-element -- inline SVG data URL */}
       <img className="qr" src={qr} alt={`QR code for ${url}`} width={220} height={220} />
       <p className="code">{code}</p>
       <p className="muted center">
         Scan, open <a href={url}>{url.replace(/^https?:\/\//, "")}</a>, or enter the code under
-        &ldquo;Celebrate a quest&rdquo;. Only your circle can see it.
+        &ldquo;Celebrate a quest&rdquo;. Only your squad can see it.
       </p>
       <ShareButton url={url} />
     </section>

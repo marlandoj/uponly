@@ -7,7 +7,7 @@ type Player = { display_name: string; gamer_tag: string | null };
 
 const timeFmt = new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
 
-/** Circle home: finishes waiting on the viewer's review. Rendered only when there's at least one. */
+/** Squad home: finishes waiting on the viewer's review. Rendered only when there's at least one. */
 export default function ReviewQueue({
   queue,
   players,
@@ -34,7 +34,7 @@ export default function ReviewQueue({
                 <span className="queue-info">
                   <strong className="queue-title">{run.title}</strong>
                   <span className="queue-player">
-                    {player?.display_name ?? "A circle-mate"}
+                    {player?.display_name ?? "A squadmate"}
                     {player?.gamer_tag && <span className="queue-tag"> · 🎮 {player.gamer_tag}</span>}
                   </span>
                   <span className="queue-meta">

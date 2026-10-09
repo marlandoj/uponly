@@ -3,7 +3,7 @@
 //
 // It never blocks completion — the quest is already completed when this runs,
 // and every failure mode (no API key, timeout, HTTP error, refusal, malformed
-// answer) degrades to "photo-only": the circle-mate rates from the photos alone.
+// answer) degrades to "photo-only": the squadmate rates from the photos alone.
 // The model's own "unclear" takes the same photo-only path; it is stored
 // separately only so the player sees an honest label. Only "pass" earns full
 // rating weight (see verificationWeight in lib/rating.ts).
@@ -36,7 +36,7 @@ export type ProgressCheckOptions = {
   fetchImpl?: typeof fetch;
 };
 
-const RATE_FROM_PHOTOS = "your circle-mate will judge from the photos.";
+const RATE_FROM_PHOTOS = "your squadmate will judge from the photos.";
 export const PHOTO_ONLY = {
   off: `AI check is off — ${RATE_FROM_PHOTOS}`,
   timeout: `AI check took too long — ${RATE_FROM_PHOTOS}`,

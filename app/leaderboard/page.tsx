@@ -14,9 +14,9 @@ type Row = {
 };
 
 /**
- * Circle-only leaderboard. Ranked by chore level, then streak, then quests
- * completed — the spec's order. RLS scopes profiles to circle-mates, so this
- * query can never leak another circle's members.
+ * Squad-only leaderboard. Ranked by chore level, then streak, then quests
+ * completed — the spec's order. RLS scopes profiles to squadmates, so this
+ * query can never leak another squad's members.
  */
 export default async function Leaderboard() {
   const circle = await getMyCircle();

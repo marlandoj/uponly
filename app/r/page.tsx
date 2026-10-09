@@ -10,7 +10,7 @@ export default async function EnterCodePage({
   return (
     <>
       <h1>Celebrate a quest</h1>
-      <p className="muted">Enter the 6-character code from a circle-mate&apos;s finished quest.</p>
+      <p className="muted">Enter the 6-character code from a squadmate&apos;s finished quest.</p>
       {error && <p className="error">{error}</p>}
       <form action={openCode} className="card">
         <label>
@@ -26,7 +26,7 @@ export default async function EnterCodePage({
         </label>
         <button type="submit">Open quest</button>
       </form>
-      <Link href="/" className="muted center">Back to circle</Link>
+      <Link href="/" className="muted center">Back to squad</Link>
     </>
   );
 }
