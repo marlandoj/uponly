@@ -816,3 +816,56 @@ ol.comment-list li.mine { border-left-color: var(--magenta); }
   background: rgb(125 255 42 / 0.12);
   box-shadow: 0 3px 0 #000;
 }
+
+/* Chore Crew — ambient pixel gamers crossing the bottom of the screen.
+   Sprites are generated box-shadow art (app/chore-crew.css). z-index -1 on a
+   direct child of body: above the canvas background, under all page content. */
+.chore-crew {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+}
+.chore-crew * { pointer-events: none; }
+.cc-walker {
+  position: absolute;
+  left: 0;
+  bottom: calc(env(safe-area-inset-bottom) + var(--cc-lane, 4vh));
+  width: 48px;
+  height: 60px;
+  opacity: 0;
+  animation: cc-cross-ltr var(--cc-duration, 18s) linear forwards;
+  will-change: transform, opacity;
+}
+.cc-walker--rtl { animation-name: cc-cross-rtl; }
+/* Pixel ground shadow — stays put while the body bobs */
+.cc-walker::after {
+  content: "";
+  position: absolute;
+  left: 9px;
+  right: 9px;
+  bottom: -3px;
+  height: 3px;
+  background: rgb(0 0 0 / 0.4);
+}
+.cc-bob { position: absolute; inset: 0; animation: cc-bob var(--cc-step, 0.45s) steps(1, end) infinite; }
+.cc-body { position: absolute; inset: 0; }
+.cc-walker--rtl .cc-body { transform: scaleX(-1); }
+@keyframes cc-cross-ltr {
+  0% { transform: translateX(-56px); opacity: 0; }
+  8%, 92% { opacity: 0.85; }
+  100% { transform: translateX(calc(100vw + 8px)); opacity: 0; }
+}
+@keyframes cc-cross-rtl {
+  0% { transform: translateX(calc(100vw + 8px)); opacity: 0; }
+  8%, 92% { opacity: 0.85; }
+  100% { transform: translateX(-56px); opacity: 0; }
+}
+@keyframes cc-bob {
+  0% { transform: translateY(0); }
+  50%, 100% { transform: translateY(-3px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .chore-crew { display: none; }
+}
