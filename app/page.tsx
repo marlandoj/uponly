@@ -8,7 +8,6 @@ import { getOpenQuestRun } from "@/lib/questRuns";
 import { getReviewQueue } from "@/lib/reviewData";
 import { createClient } from "@/lib/supabase/server";
 import ActiveQuestCard from "./ActiveQuestCard";
-import { BossBar } from "./Celebrate";
 import ReviewQueue from "./ReviewQueue";
 import { signOut } from "./login/actions";
 
@@ -46,7 +45,9 @@ export default async function Home() {
       <h1>{circle.name}</h1>
       {me && (
         <Link href="/profile" className="loot-chip">
-          {me.gamer_tag ? <>🎮 Loot bound for: <strong>{me.gamer_tag}</strong></> : "🎮 Set your gamer tag"}
+          {isGameMaster
+            ? (me.gamer_tag ? <>🛡️ GameMaster: <strong>{me.gamer_tag}</strong></> : "🛡️ Set your GameMaster name")
+            : (me.gamer_tag ? <>🎮 Loot bound for: <strong>{me.gamer_tag}</strong></> : "🎮 Set your gamer tag")}
         </Link>
       )}
       {openRun && <ActiveQuestCard run={openRun} />}
@@ -56,14 +57,6 @@ export default async function Home() {
       <Link href="/r" className="button secondary">Celebrate a squadmate&apos;s quest</Link>
       <Link href="/leaderboard" className="button secondary">Leaderboard</Link>
       <Link href="/rewards" className="button secondary">Rewards &amp; loot</Link>
-
-      {me && (
-        <section className="card">
-          <h2>Boss battle</h2>
-          <BossBar xp={me.xp} />
-          <p className="muted">Every finished quest hits the boss for 10 XP (up to 3 a day).</p>
-        </section>
-      )}
 
       <section className="card share">
         <h2>Invite to your squad</h2>
