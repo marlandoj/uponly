@@ -73,7 +73,7 @@ export function RewardFields({
   input,
 }: {
   from: string;
-  input: { name: string; description: string; valueCents: number | null; fulfillment: string; kind: string; game: string };
+  input: { name: string; description: string; valueCents: number | null; fulfillment: string; kind: string; game: string; imageUrl?: string | null };
 }) {
   return (
     <>
@@ -85,6 +85,7 @@ export function RewardFields({
       <input type="hidden" name="kind" value={input.kind} />
       <input type="hidden" name="game" value={input.game} />
       <input type="hidden" name="quest" value="" />
+      {input.imageUrl && <input type="hidden" name="imageUrl" value={input.imageUrl} />}
     </>
   );
 }

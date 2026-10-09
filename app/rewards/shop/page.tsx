@@ -33,7 +33,7 @@ export default async function FortniteShopPage({
           {shop.items.map((item) => (
             <li key={item.id}>
               <form action={createReward} className="loot-tile">
-                <RewardFields from="/rewards/shop" input={shopItemToRewardInput(item)} />
+                <RewardFields from="/rewards/shop" input={{ ...shopItemToRewardInput(item), imageUrl: item.image }} />
                 {/* eslint-disable-next-line @next/next/no-img-element -- remote shop art, display only */}
                 <img src={item.image} alt="" width={128} height={128} loading="lazy" className="shop-art" />
                 <strong>{item.name}</strong>

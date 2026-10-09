@@ -38,6 +38,7 @@ export type Reward = {
   value_cents: number | null;
   fulfillment: FulfillmentKind;
   quest_key: string | null;
+  image_url?: string | null;
 };
 
 export type RewardEarning = {
@@ -68,7 +69,7 @@ export type EarnedReward = {
 
 export type RunForRewards = { id: string; user_id: string; circle_id: string; quest_key: string };
 
-export const REWARD_COLUMNS = "id, circle_id, name, description, kind, game, value_cents, fulfillment, quest_key";
+export const REWARD_COLUMNS = "id, circle_id, name, description, kind, game, value_cents, fulfillment, quest_key, image_url";
 
 // ---------------------------------------------------------------------------
 // Pure helpers
@@ -139,6 +140,7 @@ export type RewardInput = {
   questKey: string | null;
   kind: RewardKind;
   game: Game | null;
+  imageUrl: string | null;
 };
 
 /**
@@ -153,6 +155,7 @@ export function parseRewardForm(form: {
   questKey?: unknown;
   kind?: unknown;
   game?: unknown;
+  imageUrl?: unknown;
 }): { ok: true; value: RewardInput } | { ok: false; error: string } {
   const name = String(form.name ?? "").trim();
   if (name.length < 1 || name.length > 60) return { ok: false, error: "Name must be 1-60 characters" };
@@ -173,7 +176,14 @@ export function parseRewardForm(form: {
   const game = rawGame === "" ? null : rawGame;
   if (game !== null && !isGame(game)) return { ok: false, error: "Pick a game from the list" };
   if (kind === "game_credit" && game === null) return { ok: false, error: "Game loot needs a game" };
-  return { ok: true, value: { name, description, valueCents, fulfillment: form.fulfillment, questKey, kind, game } };
+  // Shop art only: https or nothing, so a tampered form can't inject a
+  // javascript: URL into an <img> tag later.
+  const rawImage = String(form.imageUrl ?? "").trim();
+  const imageUrl = rawImage === "" ? null : rawImage;
+  if (imageUrl !== null && !imageUrl.startsWith("https://")) {
+    return { ok: false, error: "Reward image must be an https URL" };
+  }
+  return { ok: true, value: { name, description, valueCents, fulfillment: form.fulfillment, questKey, kind, game, imageUrl } };
 }
 
 /** Catalog title for a reward's quest_key ("Any quest" when unattached). */

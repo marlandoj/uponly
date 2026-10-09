@@ -223,8 +223,29 @@ describe("reward form", () => {
         questKey: "dishes",
         kind: "food",
         game: null,
+        imageUrl: null,
       },
     });
+  });
+  it("round-trips an https reward image", () => {
+    const r = parseRewardForm({
+      name: "Party MVP",
+      fulfillment: "mock-tremendous",
+      kind: "game_credit",
+      game: "Fortnite",
+      imageUrl: "https://cdn.fortnite-api.com/images/cosmetics/br/fake.png",
+    });
+    expect(r.ok && r.value.imageUrl).toBe("https://cdn.fortnite-api.com/images/cosmetics/br/fake.png");
+  });
+  it("treats a missing image as null", () => {
+    const r = parseRewardForm({ name: "Ice cream", fulfillment: "manual" });
+    expect(r.ok && r.value.imageUrl).toBeNull();
+  });
+  it("rejects a non-https reward image", () => {
+    expect(
+      parseRewardForm({ name: "x", fulfillment: "manual", imageUrl: "javascript:alert(1)" }).ok,
+    ).toBe(false);
+    expect(parseRewardForm({ name: "x", fulfillment: "manual", imageUrl: "http://example.com/a.png" }).ok).toBe(false);
   });
   it("treats an empty quest as any quest", () => {
     const r = parseRewardForm({ name: "Ice cream", fulfillment: "manual", questKey: "" });
